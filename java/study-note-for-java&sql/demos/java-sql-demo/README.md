@@ -6,14 +6,18 @@
 ## 运行环境
 
 - JDK 17+（本工作区 Ubuntu 终端已内置）
-- `lib/sqlite-jdbc.jar`（SQLite 的 JDBC 驱动，已下载）
+- `lib/sqlite-jdbc.jar`（SQLite 的 JDBC 驱动；首次运行前执行 `bash download-driver.sh` 下载）
 
 ## 编译 & 运行
 
 ```bash
 cd java-sql-demo
 
+# 首次：下载 sqlite-jdbc 驱动（约 13MB，脚本会自动创建 lib/ 目录）
+bash download-driver.sh
+
 # 编译（一次性）
+
 javac -encoding UTF-8 -d out -cp lib/sqlite-jdbc.jar src/*.java
 
 # 依次运行 4 个示例（共用同一个数据库文件 data/bank.db）

@@ -46,7 +46,7 @@ java -Dfile.encoding=UTF-8 -cp out Demo1_Basics   # 也可运行 Demo2_Oop / Dem
 
 ```bash
 cd demos/java-sql-demo
-bash lib/download-driver.sh       # 首次：下载 sqlite-jdbc 驱动
+bash download-driver.sh           # 首次：下载 sqlite-jdbc 驱动
 javac -encoding UTF-8 -d out -cp lib/sqlite-jdbc.jar src/*.java
 java -Dfile.encoding=UTF-8 -cp 'lib/sqlite-jdbc.jar:out' Step1_JdbcBasics data/bank.db
 # 数据库文件 data/bank.db 会在首次运行时自动创建并初始化
