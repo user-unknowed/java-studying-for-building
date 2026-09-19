@@ -1,0 +1,3 @@
+# 编译产物（javac 生成，可用 `javac -encoding UTF-8 -d out src/*.java` 重新生成）
+out/
+*.class

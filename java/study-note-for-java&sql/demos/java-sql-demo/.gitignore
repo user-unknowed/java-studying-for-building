@@ -1,0 +1,9 @@
+# 编译产物
+out/
+*.class
+
+# 本地数据库文件（运行演示时自动生成，见 README）
+data/
+
+# JDBC 驱动（用 lib/download-driver.sh 下载，约 13MB，不入库）
+lib/*.jar
