@@ -2,78 +2,62 @@
 
 > ☕ + 🗄️ **Java / SQL 系统化学习笔记与可运行演示合集**
 >
-> 从 **JavaSE 基础 → Java×SQL 融合 → SQL 工业实践**，递进式三阶梯。
+> 从 **JavaSE 基础 → Java×SQL 融合 → SQL 工业实践 → JavaEE 服务端开发**，递进式四阶梯。
 > 所有演示代码均经过真实编译、运行、验证（拒绝纸上谈兵）。
 >
 > 整理：Operit AI · 2026-09
+
+## 📂 分区结构
+
+```
+study-note-for-java&sql/
+├── javase/                        # JavaSE 与 SQL 地基
+│   ├── docs/                      # 01 ~ 04 号文档
+│   └── demos/                     # javase-demo · java-sql-demo · sql-demo
+└── javaee/                        # Java EE（Jakarta EE）企业级开发
+    ├── README.md                  # 分区导航（推荐从这里开始阅读）
+    ├── docs/                      # 05 号文档：0~11 章实战教程
+    └── demos/
+        ├── jakarta-ee/            # 原生版：library-api · order-service
+        └── spring-boot/           # 现代版：order-service · shortlink-service
+```
 
 ## 📖 文档导航（按学习顺序）
 
 | # | 文档 | 核心内容 |
 |:---:|---|---|
-| 01 | [JavaSE基础知识点-完整梳理](docs/01-JavaSE基础知识点-完整梳理.md) | Java 地基：运行机制、类型陷阱、面向对象、集合、异常、IO、多线程、反射注解 |
-| 02 | [Java与SQL数据库-深度融合教学](docs/02-Java与SQL数据库-深度融合教学.md) | JDBC、SQL 注入攻防、事务转账、批处理性能 —— Java 视角看数据库 |
-| 03 | [SQL数据库深度讲解-工业实践版](docs/03-SQL数据库深度讲解-工业实践版.md) | 窗口函数、索引优化、事务并发、执行计划 —— 数据库视角的工业实践 |
-| 04 | [学习报告-Java-数据库-AI-Agent](docs/04-学习报告-Java-数据库-AI-Agent.md) | 三大学习方向总览与路线规划 |
+| 01 | [JavaSE基础知识点-完整梳理](javase/docs/01-JavaSE基础知识点-完整梳理.md) | Java 地基：运行机制、类型陷阱、面向对象、集合、异常、IO、多线程、反射注解 |
+| 02 | [Java与SQL数据库-深度融合教学](javase/docs/02-Java与SQL数据库-深度融合教学.md) | JDBC、SQL 注入攻防、事务转账、批处理性能 |
+| 03 | [SQL数据库深度讲解-工业实践版](javase/docs/03-SQL数据库深度讲解-工业实践版.md) | 窗口函数、索引优化、事务并发、执行计划 |
+| 04 | [学习报告-Java-数据库-AI-Agent](javase/docs/04-学习报告-Java-数据库-AI-Agent.md) | 三大学习方向总览与路线规划 |
+| 05 | [JavaEE企业级开发-现代实战教程](javaee/docs/05-JavaEE企业级开发-现代实战教程.md) | Servlet → DAO/事务 → REST → 并发防超卖 → 幂等 → Spring Boot 迁移 → 工程化踩坑（0~11 章） |
 
-## 💻 可运行演示（全部实测通过）
+## 💻 可运行项目（全部实测通过）
+
+### javase 分区
 
 | 项目 | 技术栈 | 内容 |
 |---|---|---|
-| [javase-demo](demos/javase-demo/) | Java | 字节码反汇编、类型陷阱（溢出/精度/常量池）、OOP 多态、集合 + Stream |
-| [java-sql-demo](demos/java-sql-demo/) | Java + JDBC + SQLite | CRUD、SQL 注入攻防实录、转账事务、批处理性能对比（5324ms → 9ms） |
-| [sql-demo](demos/sql-demo/) | Python + SQLite | JOIN、窗口函数、连续登录、EXPLAIN、索引实战（零依赖） |
+| [javase-demo](javase/demos/javase-demo/) | Java | 字节码反汇编、类型陷阱（溢出/精度/常量池）、OOP 多态、集合 + Stream |
+| [java-sql-demo](javase/demos/java-sql-demo/) | Java + JDBC + SQLite | CRUD、SQL 注入攻防实录、转账事务、批处理性能对比 |
+| [sql-demo](javase/demos/sql-demo/) | Python + SQLite | JOIN、窗口函数、连续登录、EXPLAIN、索引实战（零依赖） |
+
+### javaee 分区（详细导航见 [javaee/README.md](javaee/README.md)）
+
+| 项目 | 技术栈 | 端口 | 练什么 |
+|---|---|---|---|
+| [library-api](javaee/demos/jakarta-ee/library-api/) | Jakarta EE · 嵌入式 Tomcat | 8081 | Servlet 路由、DAO 分层、事务借还、JOIN 统计 |
+| [order-service（原生）](javaee/demos/jakarta-ee/order-service/) | Jakarta EE · 嵌入式 Tomcat | 8082 | 防超卖条件更新、状态守卫、15 并发压测 |
+| [order-service（Spring Boot）](javaee/demos/spring-boot/order-service/) | Spring Boot 3.5 | 8081 | 注解、IoC、`@Transactional`、与原生版逐行对照 |
+| [shortlink-service](javaee/demos/spring-boot/shortlink-service/) | Spring Boot 3.5 | 8083 | 302 跳转、唯一约束、原子计数 |
 
 ## 🗺️ 建议学习路线
 
 ```
-① JavaSE 基础    docs/01  +  demos/javase-demo     ← Java 语言地基
-② Java × SQL     docs/02  +  demos/java-sql-demo   ← 用 Java 操作数据库
-③ SQL 工业实践   docs/03  +  demos/sql-demo        ← 深入数据库本身
+① JavaSE 基础      javase/docs/01  +  javase/demos/javase-demo
+② Java × SQL 融合  javase/docs/02  +  javase/demos/java-sql-demo
+③ SQL 工业实践     javase/docs/03  +  javase/demos/sql-demo
+④ JavaEE 服务端    javaee/docs/05  +  javaee/demos/（先原生，后 Spring Boot）
 ```
 
-## 🚀 快速开始
-
-### javase-demo（Java 17+）
-
-```bash
-cd demos/javase-demo
-javac -encoding UTF-8 -d out src/*.java
-java -Dfile.encoding=UTF-8 -cp out Demo1_Basics   # 也可运行 Demo2_Oop / Demo3_Collections
-```
-
-### java-sql-demo（Java 17+）
-
-```bash
-cd demos/java-sql-demo
-bash download-driver.sh           # 首次：下载 sqlite-jdbc 驱动
-javac -encoding UTF-8 -d out -cp lib/sqlite-jdbc.jar src/*.java
-java -Dfile.encoding=UTF-8 -cp 'lib/sqlite-jdbc.jar:out' Step1_JdbcBasics data/bank.db
-# 数据库文件 data/bank.db 会在首次运行时自动创建并初始化
-```
-
-### sql-demo（Python 3）
-
-```bash
-cd demos/sql-demo
-python3 sql_demo.py
-```
-
-## 📁 目录结构
-
-```
-study-note-for-java&sql/
-├── README.md            ← 本导航
-├── docs/                ← 教学文档（按学习顺序编号）
-└── demos/               ← 可运行演示项目
-    ├── javase-demo/     JavaSE 基础演示（4 个程序）
-    ├── java-sql-demo/   Java × JDBC 实战（4 个程序）
-    └── sql-demo/        SQL 工业实践（Python + SQLite）
-```
-
----
-
-### 说明
-
-- 编译产物（`out/`、`*.class`）、本地数据库文件（`data/bank.db`）、JDBC 驱动（约 13MB）未入库，均可按上方命令一键重新生成 / 下载。
-- 各演示的详细说明见各自目录下的 README。
+> 每一步都遵循同一原则：**先读文档懂原理，再跑代码看真实结果**。

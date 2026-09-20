@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: shortlink-service
+
+  # SQLite 数据源
+  datasource:
+    url: jdbc:sqlite:data/shortlink.db
+    driver-class-name: org.sqlite.JDBC
+
+  # SQLite 不属于 Spring Boot 识别范围内的嵌入式数据库，需显式开启 SQL 初始化
+  sql:
+    init:
+      mode: always
+
+server:
+  port: 8083
+
+logging:
+  level:
+    # 打印 JdbcTemplate 真实执行的 SQL（教学演示用，生产可关掉）
+    org.springframework.jdbc.core: DEBUG

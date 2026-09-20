@@ -1,0 +1,47 @@
+===== 0. 图书列表（初始为空） =====
+[]
+
+===== 1. 新增三本图书 =====
+{"id":1,"title":"深入理解Java虚拟机","author":"周志明","stock":2}
+HTTP 201
+{"id":2,"title":"Java并发编程实战","author":"Brian Goetz","stock":1}
+HTTP 201
+{"id":3,"title":"SQL必知必会","author":"Ben Forta","stock":3}
+HTTP 201
+
+
+===== 2. 图书列表 =====
+[{"id":1,"title":"深入理解Java虚拟机","author":"周志明","stock":2},{"id":2,"title":"Java并发编程实战","author":"Brian Goetz","stock":1},{"id":3,"title":"SQL必知必会","author":"Ben Forta","stock":3}]
+
+===== 3. 张三借《深入理解Java虚拟机》（库存 2→1） =====
+{"book":{"id":1,"title":"深入理解Java虚拟机","author":"周志明","stock":1},"result":"借阅成功"}
+HTTP 200
+
+
+===== 4. 李四也借同一本（库存 1→0） =====
+{"book":{"id":1,"title":"深入理解Java虚拟机","author":"周志明","stock":0},"result":"借阅成功"}
+HTTP 200
+
+
+===== 5. 王五再借 → 库存不足（409） =====
+{"error":"库存不足，借阅失败"}
+HTTP 409
+
+
+===== 6. 张三还书（库存 0→1） =====
+{"book":{"id":1,"title":"深入理解Java虚拟机","author":"周志明","stock":1},"result":"归还成功"}
+HTTP 200
+
+
+===== 7. 王五借《Java并发编程实战》（唯一 1 本） =====
+{"book":{"id":2,"title":"Java并发编程实战","author":"Brian Goetz","stock":0},"result":"借阅成功"}
+HTTP 200
+
+
+===== 8. 借阅排行榜（LEFT JOIN + GROUP BY 统计） =====
+[{"id":1,"title":"深入理解Java虚拟机","borrowCount":2},{"id":2,"title":"Java并发编程实战","borrowCount":1},{"id":3,"title":"SQL必知必会","borrowCount":0}]
+
+===== 9. 不存在的书（404） =====
+{"error":"图书不存在: id=999"}
+HTTP 404
+

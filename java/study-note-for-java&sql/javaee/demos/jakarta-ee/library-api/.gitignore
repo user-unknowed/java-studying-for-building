@@ -1,0 +1,12 @@
+# 编译产物
+out/
+*.class
+
+# 本地数据库（运行时自动生成）
+library.db*
+
+# 依赖 jar（用 download-deps.sh 下载）
+lib/*.jar
+
+# 本地调试日志
+server.log

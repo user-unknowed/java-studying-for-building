@@ -1,0 +1,25 @@
+===== 0. 短链列表（含种子数据） =====
+[{"id":2,"code":"sqlite","originalUrl":"https://sqlite.org","clicks":0,"createdAt":"2026-09-19 23:44:50"},{"id":1,"code":"gh","originalUrl":"https://github.com/user-unknowed/java-studying-for-building","clicks":0,"createdAt":"2026-09-19 23:44:50"}]
+===== 1. 创建短链（自动短码） =====
+{"originalUrl":"https://github.com/user-unknowed/java-studying-for-building/tree/main/java","shortUrl":"http://localhost:8083/YEUHkzQ","code":"YEUHkzQ"}
+生成短码: YEUHkzQ
+===== 2. 创建短链（自定义短码 github） =====
+{"originalUrl":"https://github.com","shortUrl":"http://localhost:8083/github","code":"github"}
+===== 3. 自定义短码重复 → 应 409 =====
+{"type":"BIZ_ERROR","error":"短码已被占用: github"}
+HTTP 409
+===== 4. 访问短链 → 应 302 跳转（看 Location 头） =====
+HTTP/1.1 302 
+Location: https://github.com/user-unknowed/java-studying-for-building/tree/main/java
+===== 5. 再点两次（累计 3 次点击） =====
+===== 6. 短码统计（clicks 应为 3） =====
+{"id":5,"code":"YEUHkzQ","originalUrl":"https://github.com/user-unknowed/java-studying-for-building/tree/main/java","clicks":3,"createdAt":"2026-09-19 23:48:21"}
+===== 7. 不存在的短码 → 应 404 =====
+{"type":"BIZ_ERROR","error":"短码不存在: nope404"}
+HTTP 404
+跳转不存在的短码: HTTP 404
+===== 8. 参数校验失败（originalUrl 为空） → 应 400 =====
+{"type":"VALIDATION_ERROR","error":"originalUrl: originalUrl 不能为空"}
+HTTP 400
+===== 9. 最终短链列表 =====
+[{"id":6,"code":"github","originalUrl":"https://github.com","clicks":0,"createdAt":"2026-09-19 23:48:21"},{"id":5,"code":"YEUHkzQ","originalUrl":"https://github.com/user-unknowed/java-studying-for-building/tree/main/java","clicks":3,"createdAt":"2026-09-19 23:48:21"},{"id":2,"code":"sqlite","originalUrl":"https://sqlite.org","clicks":0,"createdAt":"2026-09-19 23:44:50"},{"id":1,"code":"gh","originalUrl":"https://github.com/user-unknowed/java-studying-for-building","clicks":0,"createdAt":"2026-09-19 23:44:50"}]
