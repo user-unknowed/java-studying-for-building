@@ -48,4 +48,4 @@ bash test_api.sh | tee run_output.txt
 同样的分层思想，在 Spring Boot 里由框架自动完成「组件装配、事务代理、JSON 序列化」。
 
 ---
-*配套教程：`docs/05-JavaEE企业级开发-现代实战教程.md`（第 9 章有完整迁移对照）*
+*配套教程：`docs/05-JavaEE企业级开发-现代实战教程.md`（第 11 章有完整迁移对照）*

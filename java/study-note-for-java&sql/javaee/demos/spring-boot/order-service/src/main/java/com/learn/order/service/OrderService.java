@@ -34,7 +34,7 @@ public class OrderService {
      * 现在只需一行注解。</p>
      *
      * <p>并发细节：循环里「先 UPDATE 扣库存、后 SELECT 读单价」的顺序不是随手写的——
-     * SQLite WAL 下需要写操作先行，否则高并发时会出现快照冲突（见教程第 10 章实战记录）。</p>
+     * SQLite WAL 下需要写操作先行，否则高并发时会出现快照冲突（见教程第 12 章实战记录）。</p>
      */
     @Transactional
     public long placeOrder(CreateOrderRequest req) {

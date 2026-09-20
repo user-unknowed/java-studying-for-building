@@ -39,9 +39,9 @@ python3 stress_test.py 15 3 1
 
 ## 值得看的三个细节
 
-1. **`@Transactional`**：与原生版手写 `commit/rollback` 完全等价（教程第 7、9 章）；
-2. **写操作先行**：`placeOrder` 里"先 UPDATE 扣库存、后 SELECT 读单价"——SQLite WAL 下的并发要点，全流程踩坑记录见教程第 10 章；
+1. **`@Transactional`**：与原生版手写 `commit/rollback` 完全等价（教程第 9、11 章）；
+2. **写操作先行**：`placeOrder` 里"先 UPDATE 扣库存、后 SELECT 读单价"——SQLite WAL 下的并发要点，全流程踩坑记录见教程第 12 章；
 3. **连接串参数**：`application.yml` 里 `journal_mode=WAL&busy_timeout=5000`，高并发行为的关键。
 
 ---
-*配套教程：`javaee/docs/05-JavaEE企业级开发-现代实战教程.md`（第 9 章有完整迁移对照）*
+*配套教程：`javaee/docs/05-JavaEE企业级开发-现代实战教程.md`（第 11 章有完整迁移对照）*

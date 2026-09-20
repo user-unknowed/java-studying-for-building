@@ -4,7 +4,7 @@ spring:
 
   # SQLite 数据源
   # WAL：读写并行；busy_timeout：写锁冲突时最多等待 5 秒而不是立刻失败
-  # （两者缺一不可，高并发下的关键参数——详见教程第 10 章"踩坑记录"）
+  # （两者缺一不可，高并发下的关键参数——详见教程第 12 章"踩坑记录"）
   datasource:
     url: jdbc:sqlite:data/order.db?journal_mode=WAL&busy_timeout=5000
     driver-class-name: org.sqlite.JDBC
