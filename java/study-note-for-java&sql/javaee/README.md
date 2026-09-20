@@ -49,5 +49,9 @@ python3 stress_test.py 15 3 1
 3. 接着读第 8~10 章（并发 / 事务 / 幂等），对照 `order-service` 两版代码；
 4. 最后读第 11~13 章（迁移 / 工程化 / 收官），跑 `shortlink-service`。
 
+## 🔗 延伸阅读
+
+- [07-JavaEE上位机实战：网页监控看板与远程控制](../host-computer/docs/07-JavaEE上位机实战-网页监控看板与远程控制.md) ——用本分区的 Servlet / 嵌入式 Tomcat 技能，给"工业设备"做一块 Web监控看板；配套项目 [web-monitor](../host-computer/demos/web-monitor/)与 05 号教程的 `library-api`同构。
+
 ---
 *本分区与 `javase/`、`host-computer/` 分区共同构成完整的 Java 学习阶梯：JavaSE → Java×SQL → SQL 工业实践 → JavaEE 服务端开发 → 工业应用。*

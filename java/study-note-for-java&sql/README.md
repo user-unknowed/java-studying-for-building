@@ -22,9 +22,10 @@ study-note-for-java&sql/
 │       └── spring-boot/           # 现代版：order-service · shortlink-service
 └── host-computer/                 # Java 上位机 / 工业数据采集
     ├── README.md                  # 分区导航
-    ├── docs/                      # 06 号文档：0~9 章上位机教程
+    ├── docs/                      # 06 ~ 07 号文档：上位机教程（桌面版 + 网页版）
     └── demos/
-        └── device-monitor/        # 上位机（TCP/RTU）+ 下位机模拟器 + 一键脚本
+        ├── device-monitor/        # 桌面版上位机（TCP/RTU）+ 下位机模拟器 + 一键脚本
+        └── web-monitor/           # 网页版上位机：Servlet + 嵌入式 Tomcat + 零依赖看板页
 ```
 
 ## 📖 文档导航（按学习顺序）
@@ -37,6 +38,7 @@ study-note-for-java&sql/
 | 04 | [学习报告-Java-数据库-AI-Agent](javase/docs/04-学习报告-Java-数据库-AI-Agent.md) | 三大学习方向总览与路线规划 |
 | 05 | [JavaEE企业级开发-现代实战教程](javaee/docs/05-JavaEE企业级开发-现代实战教程.md) | **现代 Java 语法速览 + 外部函数库与依赖管理** → Servlet → DAO/事务 → REST → 并发防超卖 → 幂等 → Spring Boot 迁移 → 工程化踩坑（0~13 章） |
 | 06 | [Java上位机开发实战：串口 · Modbus · 数据采集与监控](host-computer/docs/06-Java上位机开发实战-串口·Modbus·数据采集与监控.md) | 串口/以太网通信、Modbus 协议手写（帧结构 / CRC16）、数据入库、控制与报警闭环、Swing 监控、真机迁移（0~9 章 + 附录） |
+| 07 | [JavaEE上位机实战：网页监控看板与远程控制](host-computer/docs/07-JavaEE上位机实战-网页监控看板与远程控制.md) | 网页版上位机：Servlet + 嵌入式 Tomcat 起服务、Poller 采集与断线自愈、4 个 REST 端点、零依赖 SVG 看板、控制下发闭环（与 06 共用同一台下位机） |
 
 ## 💻 可运行项目（全部实测通过）
 
@@ -62,6 +64,7 @@ study-note-for-java&sql/
 | 项目 | 技术栈 | 练什么 |
 |---|---|---|
 | [device-monitor](host-computer/demos/device-monitor/) | Java 17 · jSerialComm · SQLite JDBC + Python 模拟器 | 手写 Modbus TCP/RTU 帧、CRC16、串口抽象、入库、控制闭环、报警上升沿 |
+| [web-monitor](host-computer/demos/web-monitor/) | Java EE · Servlet · 嵌入式 Tomcat · SQLite | Web 看板、REST API、控制下发、请求日志 Filter、断线自愈 |
 
 ## 🗺️ 建议学习路线
 
@@ -70,7 +73,7 @@ study-note-for-java&sql/
 ② Java × SQL 融合    javase/docs/02  +  javase/demos/java-sql-demo
 ③ SQL 工业实践       javase/docs/03  +  javase/demos/sql-demo
 ④ JavaEE 服务端      javaee/docs/05  +  javaee/demos/（先原生，后 Spring Boot）
-⑤ 上位机 / 工业采集   host-computer/docs/06  +  host-computer/demos/device-monitor
+⑤ 上位机 / 工业采集   host-computer/docs/06、07  +  host-computer/demos/（先桌面版 device-monitor，再网页版 web-monitor）
 ```
 
 > 每一步都遵循同一原则：**先读文档懂原理，再跑代码看真实结果**。

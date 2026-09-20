@@ -1,0 +1,9 @@
+# 编译产物（javac 生成）
+out/
+*.class
+# 运行期生成（SQLite 数据库 / 模拟器日志）
+data/
+# Tomcat 运行临时目录
+tomcat.*/
+# 依赖 jar（用 download-deps.sh 下载到 lib/）
+lib/*.jar

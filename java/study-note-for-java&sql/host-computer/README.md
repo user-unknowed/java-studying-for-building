@@ -1,28 +1,37 @@
 # host-computer 分区 —— Java 上位机 / 工业数据采集
 
-> 学习阶梯的"工业落地"段：把 JavaSE 语法与 Java×SQL 技能，用到真实的工业场景——
-> 串口 / 以太网通信、Modbus 协议、数据采集与监控。
+> 学习阶梯的"工业落地"段：把 JavaSE / JavaEE 语法与 Java×SQL 技能，用到真实的工业场景——
+> 串口 / 以太网通信、Modbus 协议、数据采集与监控。两种上位机：桌面版（06）+ 网页版（07）。
 
 ## 📖 文档
 
 | 文档 | 内容 |
 |---|---|
 | [06-Java上位机开发实战：串口 · Modbus · 数据采集与监控](docs/06-Java上位机开发实战-串口·Modbus·数据采集与监控.md) | 0~9 章 + 附录：通信基础 → Modbus 手写协议帧（TCP/RTU + CRC16）→ 数据入库 → 控制与报警 → 可靠性工程 → Swing 界面 → 真机迁移（含真实 bug 复盘） |
+| [07-JavaEE上位机实战：网页监控看板与远程控制](docs/07-JavaEE上位机实战-网页监控看板与远程控制.md) | 网页版上位机：Servlet + 嵌入式 Tomcat → Poller 采集与断线自愈 → 4 个 REST 端点 → 零依赖 SVG 看板 → 控制下发闭环（复用 06 的下位机与寄存器契约） |
 
 ## 💻 项目（全部真实运行验证）
 
 | 项目 | 技术栈 | 练什么 |
 |---|---|---|
 | [device-monitor](demos/device-monitor/) | Java 17 · jSerialComm · SQLite JDBC + Python 模拟器 | TCP / 串口双链路、Modbus 帧与 CRC16、入库、控制闭环、报警上升沿 |
+| [web-monitor](demos/web-monitor/) | Java EE · Servlet · 嵌入式 Tomcat · SQLite | Web 看板、REST API、控制下发、请求日志 Filter、断线自愈（多人多端看数据） |
 
 ## 🚀 快速开始
 
 ```bash
+# 桌面版（06）
 cd demos/device-monitor
 bash download-deps.sh        # 下载依赖（jSerialComm + SQLite JDBC）
 bash scripts/sim_test.sh     # 契约测试：原始字节验证下位机模拟器
 bash scripts/run_demo.sh     # TCP 全流程：采集 → 报表 → 控制 → 报警
 bash scripts/run_serial.sh   # 串口（PTY）全流程：Modbus RTU + CRC16
+
+# 网页版（07）
+cd ../web-monitor
+bash download-deps.sh        # 下载依赖（嵌入式 Tomcat + Gson + SQLite JDBC）
+bash scripts/run_web.sh      # 启动后浏览器打开 http://localhost:8090/
+bash scripts/run_demo.sh     # 或全自动演示：API 自检 → 控制下发 → 报警联动
 ```
 
 ## 🗺️ 前置知识（建议先完成）

@@ -667,4 +667,6 @@ src/.../ui/MonitorFrame.java             Swing 窗口
 src/.../Main.java                        monitor / report / control / gui 入口
 ```
 
-**下一篇路线建议**：多设备并发轮询模板 → 配置化（YAML）→ 历史曲线（JFreeChart）→ 打包部署（jpackage / Maven）。
+**下一篇**：《07-JavaEE上位机实战：网页监控看板与远程控制》——同一台"温室监测仪"的**网页版上位机**（Servlet + 嵌入式 Tomcat + 浏览器看板），把"一人一窗"升级成"多人多端看数据"。
+
+**更远一步的路线建议**：多设备并发轮询模板 → 配置化（YAML）→ 历史曲线（JFreeChart）→ 打包部署（jpackage / Maven）。

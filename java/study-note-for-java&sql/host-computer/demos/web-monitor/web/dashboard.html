@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>温室环境监控 · Web 看板</title>
+<!-- 07 号教程配套：零依赖看板（无 CDN、无框架，纯 HTML/CSS/JS） -->
+<style>
+:root{
+  --bg:#0e1319; --panel:#151d27; --panel2:#1b2531; --line:#25344a;
+  --text:#e9f0f7; --muted:#89a0b8; --accent:#4fc3f7;
+  --ok:#43b97f; --warn:#f2b544; --err:#ef5b5b; --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:radial-gradient(1200px 500px at 20% -10%, rgba(79,195,247,.08), transparent 60%), var(--bg);
+  color:var(--text);
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  padding:22px; min-height:100vh;
+}
+.wrap{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-direction:column;gap:6px;padding:6px 2px}
+.title-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:21px;font-weight:650;letter-spacing:.3px}
+.pill{font-size:12.5px;padding:4px 11px;border-radius:999px;background:rgba(137,160,184,.12);color:var(--muted);border:1px solid var(--line)}
+.pill.ok{color:#bff0d8;background:rgba(67,185,127,.14);border-color:rgba(67,185,127,.45)}
+.pill.bad{color:#ffd2d2;background:rgba(239,91,91,.14);border-color:rgba(239,91,91,.45)}
+.sub{color:var(--muted);font-size:13px}
+.grid-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+.metric .label{color:var(--muted);font-size:13px;letter-spacing:.4px}
+.metric .value{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;margin:6px 0}
+.metric .unit{font-size:14px;color:var(--muted);margin-left:5px;font-weight:400}
+.metric .foot{color:var(--muted);font-size:12.5px}
+.card.alarm{border-color:rgba(239,91,91,.75);box-shadow:0 0 0 1px rgba(239,91,91,.35),0 0 28px rgba(239,91,91,.22)}
+.chart-card{padding:16px 18px 18px}
+.chart-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.chart-title{font-size:15px;font-weight:600}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{cursor:pointer;font-size:13px;padding:5px 12px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted)}
+.tabs button.active{color:#fff;background:rgba(79,195,247,.16);border-color:rgba(79,195,247,.55)}
+#chart{width:100%;height:auto;display:block}
+.chart-foot{color:var(--muted);font-size:12.5px;margin-top:8px}
+.grid-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:720px){.grid-two{grid-template-columns:1fr}}
+.card-title{font-size:15px;font-weight:600;margin-bottom:10px}
+.hint{color:var(--muted);font-size:13px;margin-bottom:10px}
+.ctrl-row{display:flex;gap:10px}
+.ctrl-row input{width:110px;background:#0d1219;border:1px solid var(--line);border-radius:9px;color:var(--text);padding:9px 12px;font-size:15px;outline:none}
+.ctrl-row input:focus{border-color:var(--accent)}
+.ctrl-row button{cursor:pointer;border:none;border-radius:9px;padding:9px 18px;font-size:14.5px;font-weight:600;color:#062033;background:linear-gradient(135deg,#7fd8ff,#4fc3f7)}
+.ctrl-row button:hover{filter:brightness(1.07)}
+.ctrl-row button:disabled{opacity:.55;cursor:default}
+.msg{margin-top:10px;font-size:13px;color:var(--muted);min-height:20px;white-space:pre-wrap}
+.msg.okmsg{color:#9fe7c2}
+.msg.errmsg{color:#ffb4b4}
+.alarm-list{list-style:none;max-height:150px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.alarm-list li{font-size:13.5px;display:flex;gap:8px;align-items:baseline}
+.alarm-list li .t{color:var(--muted);font-variant-numeric:tabular-nums}
+.alarm-list li .b{color:#ffb4b4}
+.alarm-list li.empty{color:var(--muted)}
+footer{color:var(--muted);font-size:12.5px;text-align:center;padding:6px 0 16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title-row">
+      <h1>🌿 温室环境监控平台</h1>
+      <span class="pill" id="conn">连接中…</span>
+    </div>
+    <div class="sub" id="upd">等待首个数据…</div>
+  </header>
+
+  <section class="grid-metrics">
+    <div class="card metric" id="card-temp">
+      <div class="label">温度</div>
+      <div class="value"><span id="v-temp">—</span><span class="unit">℃</span></div>
+      <div class="foot" id="f-temp">上限 —</div>
+    </div>
+    <div class="card metric">
+      <div class="label">湿度</div>
+      <div class="value"><span id="v-hum">—</span><span class="unit">%</span></div>
+      <div class="foot">空气相对湿度</div>
+    </div>
+    <div class="card metric">
+      <div class="label">光照</div>
+      <div class="value"><span id="v-light">—</span><span class="unit">lx</span></div>
+      <div class="foot">大棚光照强度</div>
+    </div>
+    <div class="card metric">
+      <div class="label">土壤湿度</div>
+      <div class="value"><span id="v-soil">—</span><span class="unit">%</span></div>
+      <div class="foot">基质含水率</div>
+    </div>
+  </section>
+
+  <section class="card chart-card">
+    <div class="chart-head">
+      <span class="chart-title">历史趋势</span>
+      <div class="tabs" id="tabs">
+        <button data-metric="temp" class="active">温度</button>
+        <button data-metric="humidity">湿度</button>
+        <button data-metric="light">光照</button>
+        <button data-metric="soil">土壤湿度</button>
+      </div>
+    </div>
+    <svg id="chart" viewBox="0 0 940 260" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="chart-foot" id="chart-foot">—</div>
+  </section>
+
+  <section class="grid-two">
+    <div class="card">
+      <div class="card-title">🎛 控制下发</div>
+      <p class="hint">调整温度报警上限（写 Modbus 寄存器 9，×10 编码）：</p>
+      <div class="ctrl-row">
+        <input id="limit-input" type="number" step="0.5" min="5" max="50" value="28">
+        <button id="btn-set">下发</button>
+      </div>
+      <div class="msg" id="ctrl-msg"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔔 最近报警</div>
+      <ul class="alarm-list" id="alarm-list"><li class="empty">暂无报警记录</li></ul>
+    </div>
+  </section>
+
+  <footer>
+    Modbus TCP 轮询 · Web 版上位机（Servlet + 嵌入式 Tomcat + SQLite）· 数据每 2 秒自动刷新 · <span id="stats">—</span>
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+const state = { metric: "temp", readings: [] };
+let commandInFlight = false;
+let limitInitialized = false;
+
+const METRICS = {
+  temp:     { name: "温度",     color: "#4fc3f7", unit: "℃", pick: r => r.temp,     fmt: v => Number(v).toFixed(1) },
+  humidity: { name: "湿度",     color: "#43b97f", unit: "%",  pick: r => r.humidity, fmt: v => Number(v).toFixed(1) },
+  light:    { name: "光照",     color: "#f2b544", unit: "lx", pick: r => r.light,    fmt: v => String(Math.round(v)) },
+  soil:     { name: "土壤湿度", color: "#b78cf7", unit: "%",  pick: r => r.soil,     fmt: v => Number(v).toFixed(1) }
+};
+
+const $ = id => document.getElementById(id);
+
+async function getJSON(url) {
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "\u0026quot;", "'": "\u0026#39;"
+  }[c]));
+}
+
+function setConn(online, err) {
+  const el = $("conn");
+  if (online) {
+    el.textContent = "● 在线";
+    el.className = "pill ok";
+    el.title = "";
+  } else {
+    el.textContent = "● 离线（自动重试中）";
+    el.className = "pill bad";
+    el.title = err || "";
+  }
+}
+
+/* ---------- 实时快照 → 卡片 ---------- */
+async function refreshSummary() {
+  try {
+    const s = await getJSON("/api/summary");
+    setConn(s.online, s.lastError);
+    $("v-temp").textContent  = s.online ? Number(s.temp).toFixed(1) : "—";
+    $("v-hum").textContent   = s.online ? Number(s.humidity).toFixed(1) : "—";
+    $("v-light").textContent = s.online ? String(s.light) : "—";
+    $("v-soil").textContent  = s.online ? Number(s.soil).toFixed(1) : "—";
+    $("f-temp").textContent  = "上限 " + Number(s.limit).toFixed(1) + "℃" + (s.alarm ? " · 超限告警" : "");
+    $("card-temp").classList.toggle("alarm", !!s.alarm);
+    $("upd").textContent = s.online
+      ? "更新于 " + s.time + " · 累计采集 " + s.totalReadings + " 条 · 报警 " + s.totalAlarms + " 次"
+      : "下位机不可达：" + (s.lastError || "未知原因");
+    $("stats").textContent = "设备累计报警 " + (s.deviceAlarms == null ? "—" : s.deviceAlarms) + " 次";
+    if (!limitInitialized && typeof s.limit === "number" && s.limit > 0) {
+      $("limit-input").value = s.limit;
+      limitInitialized = true;
+    }
+  } catch (e) {
+    setConn(false, String(e));
+  }
+}
+
+/* ---------- 历史数据 → SVG 折线图 ---------- */
+async function refreshChart() {
+  try {
+    state.readings = await getJSON("/api/readings?limit=120");
+    drawChart();
+  } catch (e) {
+    drawWaiting("数据暂不可用（" + e + "）");
+  }
+}
+
+function drawWaiting(msg) {
+  $("chart").innerHTML =
+    '<text x="470" y="132" text-anchor="middle" fill="#89a0b8" font-size="15">' + escapeHtml(msg) + "</text>";
+}
+
+function drawChart() {
+  const svg = $("chart");
+  const rows = state.readings;
+  const m = METRICS[state.metric];
+  if (!rows.length) {
+    drawWaiting("等待数据…（下位机恢复后自动续采）");
+    return;
+  }
+  const w = 940, h = 260, pad = { l: 48, r: 18, t: 16, b: 28 };
+  const vals = rows.map(m.pick);
+  let lo = Math.min.apply(null, vals);
+  let hi = Math.max.apply(null, vals);
+  if (hi - lo < 1e-6) { hi = lo + 1; }
+  const span = hi - lo;
+  lo -= span * 0.12;
+  hi += span * 0.12;
+  const n = rows.length;
+  const X = i => pad.l + (w - pad.l - pad.r) * (n === 1 ? 0 : i / (n - 1));
+  const Y = v => h - pad.b - (v - lo) * (h - pad.t - pad.b) / (hi - lo);
+
+  const parts = [];
+  parts.push('<defs><linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="' + m.color + '" stop-opacity="0.40"/>'
+    + '<stop offset="100%" stop-color="' + m.color + '" stop-opacity="0"/>'
+    + "</linearGradient></defs>");
+  for (let g = 0; g <= 4; g++) {
+    const val = lo + (hi - lo) * g / 4;
+    const yy = Y(val).toFixed(1);
+    parts.push('<line x1="' + pad.l + '" y1="' + yy + '" x2="' + (w - pad.r) + '" y2="' + yy
+      + '" stroke="#223145" stroke-width="1"/>');
+    parts.push('<text x="' + (pad.l - 8) + '" y="' + (Number(yy) + 4).toFixed(1)
+      + '" text-anchor="end" fill="#89a0b8" font-size="11">' + m.fmt(val) + "</text>");
+  }
+  const pts = rows.map((r, i) => X(i).toFixed(1) + "," + Y(m.pick(r)).toFixed(1)).join(" ");
+  const area = [pad.l + "," + Y(lo).toFixed(1)]
+    .concat(pts.split(" "))
+    .concat([X(n - 1).toFixed(1) + "," + Y(lo).toFixed(1)])
+    .join(" ");
+  parts.push('<polygon points="' + area + '" fill="url(#grad)"/>');
+  parts.push('<polyline points="' + pts + '" fill="none" stroke="' + m.color
+    + '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>');
+  rows.forEach((r, i) => {
+    if (r.alarm) {
+      parts.push('<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(m.pick(r)).toFixed(1)
+        + '" r="2.6" fill="#ef5b5b"/>');
+    }
+  });
+  const last = rows[n - 1];
+  parts.push('<circle cx="' + X(n - 1).toFixed(1) + '" cy="' + Y(m.pick(last)).toFixed(1)
+    + '" r="4" fill="' + m.color + '" stroke="#0e1319" stroke-width="2"/>');
+  parts.push('<text x="' + pad.l + '" y="' + (h - 8)
+    + '" text-anchor="start" fill="#89a0b8" font-size="11">' + rows[0].time + "</text>");
+  parts.push('<text x="' + (w - pad.r) + '" y="' + (h - 8)
+    + '" text-anchor="end" fill="#89a0b8" font-size="11">' + last.time + "</text>");
+  svg.innerHTML = parts.join("");
+  $("chart-foot").textContent = m.name + " · 最近 " + n + " 个采样点 · 当前 "
+    + m.fmt(m.pick(last)) + m.unit;
+}
+
+/* ---------- 报警列表 ---------- */
+async function refreshAlarms() {
+  try {
+    const list = await getJSON("/api/alarms");
+    const ul = $("alarm-list");
+    if (!list.length) {
+      ul.innerHTML = '<li class="empty">暂无报警记录</li>';
+      return;
+    }
+    ul.innerHTML = list.map(a =>
+      '<li><span class="t">' + escapeHtml(a.time) + '</span><span class="b">⚠</span>'
+      + "<span>" + escapeHtml(a.message) + "</span></li>").join("");
+  } catch (e) { /* 静默：下一轮重试 */ }
+}
+
+/* ---------- 控制下发 ---------- */
+async function sendCommand() {
+  const input = $("limit-input");
+  const btn = $("btn-set");
+  const msg = $("ctrl-msg");
+  const v = parseFloat(input.value);
+  if (isNaN(v) || v < 5 || v > 50) {
+    msg.className = "msg errmsg";
+    msg.textContent = "请输入 5 ~ 50 之间的数值";
+    return;
+  }
+  commandInFlight = true;
+  btn.disabled = true;
+  msg.className = "msg";
+  msg.textContent = "下发中…";
+  try {
+    const r = await fetch("/api/command", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cmd: "set_temp_limit", value: v })
+    });
+    const data = await r.json();
+    if (r.ok && data.ok) {
+      msg.className = "msg okmsg";
+      msg.textContent = "✅ " + data.message;
+      limitInitialized = true;
+    } else {
+      msg.className = "msg errmsg";
+      msg.textContent = "❌ " + (data.error || ("HTTP " + r.status));
+    }
+  } catch (e) {
+    msg.className = "msg errmsg";
+    msg.textContent = "❌ 请求失败：" + e;
+  } finally {
+    commandInFlight = false;
+    btn.disabled = false;
+    refreshSummary();
+    refreshAlarms();
+  }
+}
+
+/* ---------- 事件绑定与定时刷新 ---------- */
+document.querySelectorAll("#tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#tabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.metric = btn.dataset.metric;
+    drawChart();
+  });
+});
+$("btn-set").addEventListener("click", sendCommand);
+$("limit-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") { sendCommand(); }
+});
+
+refreshSummary();
+refreshChart();
+refreshAlarms();
+setInterval(refreshSummary, 2000);
+setInterval(refreshChart, 4000);
+setInterval(refreshAlarms, 8000);
+</script>
+</body>
+</html>

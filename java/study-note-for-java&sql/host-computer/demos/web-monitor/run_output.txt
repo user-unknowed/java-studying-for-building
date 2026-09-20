@@ -1,0 +1,91 @@
+================================================================================
+ web-monitor 运行输出存档（真实执行结果）
+ 环境: Linux (aarch64) · OpenJDK 17.0.20 · Python 3.12 · 嵌入式 Tomcat 10.1.60
+ 生成方式: bash scripts/run_demo.sh + 断线自愈专项测试
+================================================================================
+
+== [1] 编译 ==
+Note: src/com/example/webmonitor/Main.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+compile ok
+
+== [2] 服务启动（server.log 节选）==
+INFO: Starting Servlet engine: [Apache Tomcat/10.1.60]
+INFO: Starting ProtocolHandler ["http-nio-8090"]
+==========================================================
+  温室监控 · Web 版上位机已启动
+  看板:  http://localhost:8090/
+  API:   http://localhost:8090/api/summary
+  下位机: Modbus TCP 127.0.0.1:15020（每 1s 轮询）
+==========================================================
+
+== [3] 看板页 ==
+GET / → HTTP 200
+<title>温室环境监控 · Web 看板</title>
+
+== [4] API 自检（test_api.sh 输出，JSON 排版略作压缩、内容原样）==
+[1] /api/summary
+{
+    "online": true,
+    "time": "05:01:47",
+    "temp": 24.1,
+    "humidity": 54.9,
+    "light": 680,
+    "soil": 45.8,
+    "limit": 28.0,
+    "alarm": false,
+    "deviceAlarms": 0,
+    "polls": 4,
+    "totalReadings": 4,
+    "totalAlarms": 0
+}
+[2] /api/readings?limit=3
+[
+    {"time": "05:01:45", "temp": 24.1, "humidity": 54.4, "light": 652, "soil": 45.1, "alarm": false},
+    {"time": "05:01:46", "temp": 24.2, "humidity": 55.4, "light": 655, "soil": 45.2, "alarm": false},
+    {"time": "05:01:47", "temp": 24.1, "humidity": 54.9, "light": 680, "soil": 45.8, "alarm": false}
+]
+[3] /api/alarms
+[]
+TEST_API_DONE
+
+== [5] 控制下发（POST /api/command）==
+{"ok":true,"message":"已下发报警上限 21.5℃（写寄存器 9）"}
+
+（模拟器侧收到的 Modbus 写帧，功能码 0x06 → 寄存器 9 = 0x00D7 = 215 = 21.5℃）
+[05:01:48] [SIM] TCP fn=0x06 请求=06000900d7 响应=06000900d7
+
+== [6] 下发后核验：温度越限 → 报警被真实触发 ==
+--- summary:
+{"online":true,"time":"05:01:51","temp":24.7,"humidity":55.1,"light":803,"soil":45.4,"limit":21.5,"alarm":true,"deviceAlarms":1,"polls":8,"totalReadings":8,"totalAlarms":1}
+--- alarms:
+[{"time":"05:01:49","kind":"TEMP_HIGH","message":"温度超上限: 24.5℃ > 21.5℃"}]
+
+== [7] 服务日志（LogFilter 逐请求打印，节选）==
+[web] GET /api/summary (14 ms)
+[web] GET / (8 ms)
+[web] GET / (1 ms)
+[web] GET /api/summary (1 ms)
+[web] GET /api/readings (30 ms)
+[web] GET /api/alarms (2 ms)
+[web] POST /api/command (19 ms)
+[web] GET /api/summary (2 ms)
+[web] GET /api/alarms (16 ms)
+
+== [8] 模拟器日志（轮询读帧节选：0x03 读 0..3 环境量 + 9..12 状态量）==
+[05:01:50] [SIM] TCP fn=0x03 请求=0300000004 响应=030800f5022902fd01c7
+[05:01:50] [SIM] TCP fn=0x03 请求=0300090004 响应=030800d7000100010001
+[05:01:51] [SIM] TCP fn=0x03 请求=0300000004 响应=030800f70227032301c6
+[05:01:51] [SIM] TCP fn=0x03 请求=0300090004 响应=030800d7000100010001
+
+== [9] 断线自愈专项测试（杀模拟器 → 离线 → 重启 → 自动恢复）==
+T1 初始（应在线）:
+{"online":true,"time":"05:02:03","temp":24.1,"humidity":52.5,"light":678,"soil":45.9,"limit":28.0,"alarm":false,"deviceAlarms":0,"polls":4,"totalReadings":4,"totalAlarms":0}
+T2 模拟器被杀（应离线 + 错误信息）:
+{"online":false,"lastError":"Connection refused","time":"--","temp":0.0,"humidity":0.0,"light":0,"soil":0.0,"limit":0.0,"alarm":false,"deviceAlarms":0,"polls":4,"totalReadings":4,"totalAlarms":0}
+T3 模拟器重启（应自动恢复）:
+{"online":true,"time":"05:02:10","temp":24.2,"humidity":55.6,"light":694,"soil":45.9,"limit":28.0,"alarm":false,"deviceAlarms":0,"polls":8,"totalReadings":8,"totalAlarms":0}
+
+================================================================================
+（完）全部输出均为真实运行结果，可用 bash scripts/run_demo.sh 一键复现。
+================================================================================
