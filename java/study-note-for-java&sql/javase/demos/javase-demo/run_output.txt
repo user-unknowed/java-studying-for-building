@@ -1,0 +1,299 @@
+================================================================================
+ javase-demo 运行输出存档（run_output.txt）
+
+环境: Linux / openjdk version "17.0.20" 2026-07-21
+时间: 2026-09-20
+生成: javac 全量编译 + Demo1~6 逐个运行 + javap 字节码演示 + JUnit5 测试
+================================================================================
+
+── 全量编译 ──────────────────────────────────────────
+$ javac -encoding UTF-8 -cp "lib/*" -d out src/*.java
+（成功无输出；exit=0）
+
+── 字节码演示: javap -c -cp out Hello ────────────────
+Compiled from "Hello.java"
+public class Hello {
+  public Hello();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: iconst_1
+       1: istore_1
+       2: iconst_2
+       3: istore_2
+       4: iload_1
+       5: iload_2
+       6: iadd
+       7: istore_3
+       8: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      11: iload_3
+      12: invokedynamic #13,  0             // InvokeDynamic #0:makeConcatWithConstants:(I)Ljava/lang/String;
+      17: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      20: return
+}
+
+── 运行输出 ──────────────────────────────────────────
+
+▶ Demo1_Basics （java -cp "out" Demo1_Basics）
+------------------------------------------------------------
+Java 版本: 17.0.20
+
+===== 1. 八种基本类型 =====
+byte=127, short=32767, int=2147483647, long=9223372036854775807
+float=3.14, double=3.141592653589793, char=中, boolean=true
+注意: int 最大约 21 亿 —— 时间戳、ID 都要用 long!
+
+===== 2. 整数溢出 (静默事故) =====
+int 最大值      = 2147483647
+int 最大值 + 1  = -2147483648   ← 溢出! 静默变成负数, 不报错!
+
+===== 3. 浮点精度: 钱绝对不能用 double =====
+0.1 + 0.2 = 0.30000000000000004   ← 不等于 0.3!
+BigDecimal: 0.1 + 0.2 = 0.3   ← 金额必须这样算
+
+===== 4. String 常量池 & == vs equals =====
+s1 == s2        : true   ← 同一常量池对象, 地址相同
+s1 == s3        : false   ← new 出来的不同对象
+s1.equals(s3)   : true    ← 比较内容, 永远用 equals
+s1 == s3.intern(): true   ← intern() 把字符串'放回池'
+
+===== 5. 包装类自动装箱缓存陷阱 =====
+127 == 127 : true   ← 缓存 [-128,127] 内, 是同一对象
+128 == 128 : false   ← 超出缓存, 是不同对象
+结论: 包装类比较永远用 .equals() !
+
+===== 6. switch 表达式 (JDK14+) =====
+day = 3 → 工作日   ← 还能作为表达式直接赋值
+
+===== 7. 数组与 Arrays 工具类 =====
+排序后: [1, 2, 5, 8, 9]
+5 8 9 ← 增强 for-each 遍历
+
+▶ Demo2_Oop （java -cp "out" Demo2_Oop）
+------------------------------------------------------------
+===== 1. 封装: 数据只能通过受控方法访问 =====
+存取后: Account{owner='张三', balance=150.0}
+拦截非法操作: 金额必须为正数!   ← 封装的意义
+
+===== 2. 多态: 同一行代码, 不同对象不同行为 =====
+  圆形     面积 = 12.57
+  矩形     面积 = 12.00
+  三角形    面积 = 6.00
+总面积 = 30.57   ← 循环里没有一行 if/else, 全靠多态
+
+===== 3. 接口: 描述'能力' (抽象类描述'是什么') =====
+  矩形 有 4 条边
+  三角形 有 3 条边
+
+===== 4. static: 属于类, 不属于对象 =====
+已创建的图形总数: 3   ← 类名直接访问静态字段
+
+▶ Demo3_Collections （java -cp "out" Demo3_Collections）
+------------------------------------------------------------
+===== 1. List / Set / Map 三兄弟 =====
+List (有序, 可重复): [苹果, 香蕉, 苹果]
+Set  (去重):        [苹果, 香蕉]
+Map  (键→值):       {苹果=5, 香蕉=3},  取苹果=5
+
+===== 2. 泛型: 编译期类型约束 =====
+已添加 5 个人 (放错类型编译期就报错)
+
+===== 3. Lambda + Stream: 声明式数据流水线 =====
+北京成人(按年龄): 孙七, 张三, 王五
+  对比: 如果用 for 循环 + if, 这段要写十几行
+
+===== 4. 分组统计 =====
+按城市分组计数: {广州=1, 上海=1, 北京=3}
+平均年龄: 24.2
+
+===== 5. 遍历 Map 的正确姿势 =====
+  苹果 → 5
+  香蕉 → 3
+
+===== 6. 迭代时删除元素陷阱 =====
+  抛出了: ConcurrentModificationException   ← 迭代中修改集合的著名陷阱
+  removeIf 后: [苹果, 橘子, 葡萄]
+
+Demo3 完成 ✓
+
+▶ Demo4_ModernJava （java -cp "out" Demo4_ModernJava）
+------------------------------------------------------------
+
+──────────────────────────────────────────────
+▶ [1] var 局部类型推断（JDK10+）
+──────────────────────────────────────────────
+var name -> String : Java
+var list -> ArrayList [a]
+var map  -> HashMap {one=1}
+限制：只能用于局部变量 + 必须有初始值 + 不能接 null（编译器会拦）
+
+──────────────────────────────────────────────
+▶ [2] 文本块（JDK15+）：所见即所得的多行字符串
+──────────────────────────────────────────────
+{
+  "name": "DeviceMonitor",
+  "version": 1.0,
+  "tags": ["java", "modbus"]
+}
+传统写法需要显式 \n 与转义：{⏎  "name": "DeviceMonitor"⏎}
+文本块：直接换行、引号不用转义，拼接 JSON / SQL / HTML 首选
+
+──────────────────────────────────────────────
+▶ [3] 增强 switch：表达式 + 箭头标签 + yield（JDK14+）
+──────────────────────────────────────────────
+  day=1 → 工作日
+  day=6 → 休息日
+  day=7 → 休息日
+  day=9 → 非法(编号=4)
+特点：能返回值、无 fall-through 穿透、必须穷尽
+
+──────────────────────────────────────────────
+▶ [4] record：一行 = 一个不可变数据类（JDK16+）
+──────────────────────────────────────────────
+自动 toString : Point[x=3, y=4]
+自动 equals   : p1.equals(p2) = true
+访问器        : p1.x()=3, p1.y()=4
+紧凑构造器校验: User[name=张三, age=18]
+校验拦截      : 非法年龄: -5
+
+──────────────────────────────────────────────
+▶ [5] sealed 类 + 模式匹配（JDK17）
+──────────────────────────────────────────────
+  Circle[r=2.0] → 面积 12.57
+  Rect[w=3.0, h=4.0] → 面积 12.00
+  总面积 = 24.57
+（sealed 限制谁能继承；switch 模式匹配是其最佳搭档——JDK17 为预览、JDK21 正式，本示例坚持用正式语法）
+
+──────────────────────────────────────────────
+▶ [6] instanceof 模式匹配（JDK16+）——省掉强转
+──────────────────────────────────────────────
+  String，长度=5
+  Integer 且 >10: 42
+  其他类型: Double
+  其他类型: int[]
+
+──────────────────────────────────────────────
+▶ [7] lambda、函数式接口与方法引用（JDK8+）
+──────────────────────────────────────────────
+square.apply(9)      = 81
+notBlank.test(" ")   = false
+supplier.get()       = supplied
+consumer + 方法引用输出这一行
+Integer::parseInt 方法引用 → [1, 2, 3]
+四种方法引用：类::静态 / 对象::实例 / 类::实例 / 类::new
+
+──────────────────────────────────────────────
+▶ [8] Stream 流水线实战（JDK8+）
+──────────────────────────────────────────────
+工资≥15000（降序）: [张三, 李四, 赵六, 王五]
+部门平均工资: {研发=19000.0, 运维=12000.0, 销售=15500.0}
+工资总和: 81000
+名字→工资: {钱七=12000, 李四=18000, 张三=20000, 王五=15000, 赵六=16000}
+
+──────────────────────────────────────────────
+▶ [9] Optional：把"可能为空"写进类型里（JDK8+）
+──────────────────────────────────────────────
+timeout = 3000, retries = 默认值
+host 缺失，走降级逻辑
+链式风格：user.getAddr().map(Addr::city).orElse("未知")
+
+──────────────────────────────────────────────
+▶ [10] 日期时间 API：不可变、线程安全（JDK8+）
+──────────────────────────────────────────────
+现在  : 2026-09-20 04:24:58
+一周后: 2026-09-27（相差 7 天）
+时间戳: 1789878298220 ms（Instant = 机器时间视角）
+
+✓ Demo4 完成：现代语法 10 组知识点全部实测通过
+
+▶ Demo5_Libs （java -cp "out:lib/*" Demo5_Libs）
+------------------------------------------------------------
+
+──────────────────────────────────────────────
+▶ [1] Jackson：Java 对象 ⇄ JSON（事实标准）
+──────────────────────────────────────────────
+对象→JSON: {"name":"温室传感器-A","temp":23.9,"online":true}
+美化输出:
+{
+  "name" : "温室传感器-A",
+  "temp" : 23.9,
+  "online" : true
+}
+JSON→对象: Device[name=温室传感器-A, temp=23.9, online=true]
+往返一致: true
+List→JSON: [{"name":"温室传感器-A","temp":23.9,"online":true},{"name":"传感器-B","temp":21.5,"online":false}]
+JSON→List: 大小=2, 第二项=Device[name=传感器-B, temp=21.5, online=false]
+JSON→Map: {id=1, tags=[a, b]}
+
+──────────────────────────────────────────────
+▶ [2] SLF4J：日志门面（换实现不改代码）
+──────────────────────────────────────────────
+[main] INFO Demo5_Libs - 服务启动完成, 端口=8080
+[main] WARN Demo5_Libs - 库存不足: productId=7, 剩余=0
+[main] ERROR Demo5_Libs - 模拟异常日志
+java.lang.RuntimeException: 连接超时(演示用)
+	at Demo5_Libs.main(Demo5_Libs.java:61)
+（上方日志由 slf4j-simple 输出：时间 级别 类名 - 消息）
+
+──────────────────────────────────────────────
+▶ [3] Apache Commons Lang3：补 JDK 的短板
+──────────────────────────────────────────────
+isBlank(" ")        = true
+leftPad("7",2,'0')  = 07
+abbreviate(...,8)  = "Java上..."
+toInt(null,-1)     = -1
+随机设备ID(8位)    = Y8q1VYGP
+
+✓ Demo5 完成：3 个代表性外部库（JSON/日志/工具箱）实测通过
+
+▶ Demo6_Network （java -cp "out" Demo6_Network）
+------------------------------------------------------------
+▶ TCP 回显服务端启动（端口由系统自动分配）……
+  监听端口: 35431
+  注意：真实上位机程序里，这个端口通常对应"下位机/设备服务端"的角色
+[server] 收到客户端连接: /127.0.0.1:33860
+[client] 发送: hello | 收到: ECHO: HELLO
+[server] hello  →  ECHO: HELLO
+[server] modbus over tcp  →  ECHO: MODBUS OVER TCP
+[client] 发送: modbus over tcp | 收到: ECHO: MODBUS OVER TCP
+[server] bye  →  ECHO: BYE
+[server] 连接关闭
+[client] 发送: bye | 收到: ECHO: BYE
+
+✓ Demo6 完成：TCP 全流程真实跑通（连接→发送→应答→关闭）
+  上位机教程《06》里，这套 Socket 就是与设备通信的高速公路
+
+── Hello（编译 + 运行）────────────────────────────────
+$ java -Dfile.encoding=UTF-8 -cp out Hello
+1 + 2 = 3
+
+── JUnit5 单元测试 ────────────────────────────────────
+$ java -jar lib/junit-platform-console-standalone-1.10.2.jar --class-path out-junit --scan-class-path
+[36m└─[0m [36mJUnit Platform Suite[0m [32m✔[0m
+
+Test run finished after 179 ms
+[         4 containers found      ]
+[         0 containers skipped    ]
+[         4 containers started    ]
+[         0 containers aborted    ]
+[         4 containers successful ]
+[         0 containers failed     ]
+[         3 tests found           ]
+[         0 tests skipped         ]
+[         3 tests started         ]
+[         0 tests aborted         ]
+[         3 tests successful      ]
+[         0 tests failed          ]
+
+
+WARNING: Delegated to the 'execute' command.
+         This behaviour has been deprecated and will be removed in a future release.
+         Please use the 'execute' command directly.
+
+================================================================================
+（完）全部输出均为真实运行结果。
+================================================================================

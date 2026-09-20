@@ -1,3 +1,7 @@
-# 编译产物（javac 生成，可用 `javac -encoding UTF-8 -d out src/*.java` 重新生成）
+# 编译产物（javac 生成，可用 `javac -encoding UTF-8 -cp "lib/*" -d out src/*.java` 重新生成）
 out/
+out-junit/
 *.class
+
+# 依赖 jar（用 download-deps.sh 下载到 lib/）
+lib/*.jar

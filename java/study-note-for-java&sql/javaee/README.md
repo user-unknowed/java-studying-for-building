@@ -6,7 +6,7 @@
 
 | 文档 | 内容 |
 |---|---|
-| [05-JavaEE企业级开发-现代实战教程](docs/05-JavaEE企业级开发-现代实战教程.md) | 0~11 章：技术全景 → Servlet → DAO/事务 → REST → 并发/防超卖 → 幂等 → Spring Boot 迁移 → 工程化踩坑 → 学习路线 |
+| [05-JavaEE企业级开发-现代实战教程](docs/05-JavaEE企业级开发-现代实战教程.md) | 0~13 章：**现代 Java 语法速览 + 外部函数库与依赖管理** → 技术全景 → Servlet → DAO/事务 → REST → 并发/防超卖 → 幂等 → Spring Boot 迁移 → 工程化踩坑 → 收官 |
 
 ## 💻 项目（全部真实编译运行验证）
 
@@ -44,9 +44,10 @@ python3 stress_test.py 15 3 1
 
 ## 🗺️ 学习路径建议
 
-1. 先读教程第 0~5 章（原理），边读边跑 `library-api`；
-2. 再读第 6~8 章（并发 / 事务 / 幂等），对照 `order-service` 两版代码；
-3. 最后读第 9~11 章（迁移 / 工程化 / 路线），跑 `shortlink-service`。
+1. 先读第 0~4 章（原理 + 新增的现代语法速览与依赖管理），对技术全景建立认知；
+2. 再读第 5~7 章（Servlet → DAO 分层 → REST 设计），边读边跑 `library-api`；
+3. 接着读第 8~10 章（并发 / 事务 / 幂等），对照 `order-service` 两版代码；
+4. 最后读第 11~13 章（迁移 / 工程化 / 收官），跑 `shortlink-service`。
 
 ---
-*本分区与 `javase/` 分区共同构成完整的 Java 学习阶梯：JavaSE → Java×SQL → SQL 工业实践 → JavaEE 服务端开发。*
+*本分区与 `javase/`、`host-computer/` 分区共同构成完整的 Java 学习阶梯：JavaSE → Java×SQL → SQL 工业实践 → JavaEE 服务端开发 → 工业应用。*
