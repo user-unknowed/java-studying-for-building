@@ -51,6 +51,11 @@ MODULES = [
      "subtitle": "Servlet · 嵌入式 Tomcat · REST · 零依赖 SVG 看板",
      "accent": "#0891b2", "icon": "🌐",
      "desc": "网页版上位机：Poller 采集与断线自愈、4 个 REST 端点、SVG 看板、控制下发闭环。"},
+    {"num": "08", "file": "08-Python与AI大模型-从原理到Transformer实战.md",
+     "title": "Python 与 AI 大模型：从原理到 Transformer",
+     "subtitle": "张量 · Autograd · 注意力 · GPU 并行 · 推理服务化",
+     "accent": "#7c3aed", "icon": "🐍",
+     "desc": "搞懂 Python 如何让 Transformer 跑起来：从张量与自动求导，到手写 MiniGPT 训练生成，再到 GPU 并行与 vLLM 服务化。"},
 ]
 
 # ── Pygments 生成的 CSS（浅色主题） ──
@@ -218,14 +223,14 @@ def page_template(mod, body_html, toc_html, prev_mod, next_mod):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{mod['num']} {mod['title']} · Java & SQL 教程</title>
+<title>{mod['num']} {mod['title']} · Java · SQL · Python AI 教程</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 <header class="topnav">
-  <div class="brand">Java &amp; SQL 教程<small>从原理到实战</small></div>
+  <div class="brand">Java · SQL · Python AI 教程<small>从原理到实战</small></div>
   <nav>{nav_links}</nav>
-  <a class="src" href="https://github.com/user-unknowed/studying-for-building/tree/main/java/study-note-for-java%26sql" target="_blank">📦 源码仓库</a>
+  <a class="src" href="https://github.com/user-unknowed/studying-for-building" target="_blank">📦 源码仓库</a>
 </header>
 <div class="layout">
   <aside class="sidebar">
@@ -286,31 +291,32 @@ index_html = f"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Java &amp; SQL 系统化教程 · 从原理到实战</title>
+<title>Java · SQL · Python AI 系统化教程 · 从原理到实战</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 <header class="topnav">
-  <div class="brand">Java &amp; SQL 教程<small>从原理到实战</small></div>
+  <div class="brand">Java · SQL · Python AI 教程<small>从原理到实战</small></div>
   <nav>{"".join(f'<a href="{m["num"].lower()}.html">{m["num"]} {m["title"][:10]}</a>' for m in MODULES)}</nav>
-  <a class="src" href="https://github.com/user-unknowed/studying-for-building/tree/main/java/study-note-for-java%26sql" target="_blank">📦 源码仓库</a>
+  <a class="src" href="https://github.com/user-unknowed/studying-for-building" target="_blank">📦 源码仓库</a>
 </header>
 
 <section class="hero">
   <div class="inner">
-    <h1>Java &amp; SQL 系统化教程</h1>
-    <p class="lead">从 JavaSE 基础 → Java×SQL 融合 → SQL 工业实践 → JavaEE 服务端 → Java 上位机（工业采集），递进式五阶梯。所有演示代码均经过真实编译、运行、验证。</p>
+    <h1>Java · SQL · Python AI 系统化教程</h1>
+    <p class="lead">从 JavaSE 基础 → Java×SQL 融合 → SQL 工业实践 → JavaEE 服务端 → 上位机（工业采集）→ Python 与 AI 大模型，递进式六阶梯。所有演示代码均经过真实编译、运行、验证。</p>
     <div class="tags">
       <span class="tag">JavaSE</span><span class="tag">JDBC</span><span class="tag">SQL</span>
       <span class="tag">索引优化</span><span class="tag">事务并发</span><span class="tag">Jakarta EE</span>
       <span class="tag">Spring Boot</span><span class="tag">Modbus</span><span class="tag">上位机</span>
+      <span class="tag">Python</span><span class="tag">Transformer</span><span class="tag">PyTorch</span><span class="tag">vLLM</span>
     </div>
   </div>
 </section>
 
 <div class="container">
   <h2 class="section-title">课程模块</h2>
-  <p class="section-sub">7 个递进章节，覆盖从语言基础到工业应用的完整阶梯。</p>
+  <p class="section-sub">8 个递进章节，覆盖从语言基础到工业应用与 AI 大模型的完整阶梯。</p>
   <div class="cards">{cards_html}
   </div>
 
@@ -322,6 +328,7 @@ index_html = f"""<!DOCTYPE html>
       <li><b>③ SQL 工业实践</b> → 03 章 + sql-demo（窗口函数、EXPLAIN、索引、MVCC）</li>
       <li><b>④ JavaEE 服务端</b> → 05 章 + demos（先原生 Jakarta EE，后 Spring Boot）</li>
       <li><b>⑤ 上位机 / 工业采集</b> → 06、07 章 + demos（先桌面版 device-monitor，再网页版 web-monitor）</li>
+      <li><b>⑥ Python 与 AI 大模型</b> → 08 章 + py-ai-demo（张量、Autograd、手写 MiniGPT、GPU 并行、vLLM 服务化）</li>
     </ol>
     <p style="color:var(--muted);font-size:13px;margin:12px 0 0">每一步遵循同一原则：<b>先读文档懂原理，再跑代码看真实结果</b>。</p>
   </div>

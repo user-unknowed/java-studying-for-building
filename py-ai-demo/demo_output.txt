@@ -1,0 +1,18 @@
+[device] cpu
+[model] 0.82M parameters
+step     0 | loss 4.2966
+step   100 | loss 2.6076
+step   200 | loss 2.4557
+
+===== generated text =====
+
+KLNTKENGMUShat itS haker win tof we funo hibes
+I s ireU$ungailleis wethepas Q
+MIAR:
+ind cthe.
+THhow
+s iy tov INENI'sthey thaqus Vit?
+HES:
+Anein?bemaras pp d sthodsouru od S sitimad, lty.
+Heasgheanor furas, Lhas n boult ue's darU he knd Esthay I boyeave,
+Touroy amaarl badst ter ng's ad ven dedeange r
