@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL 数据库系统原理及应用 · 从原理到实战</title>
+<style>
+  :root{
+    --bg:#ffffff; --fg:#1f2328; --muted:#57606a; --accent:#2563eb; --accent-soft:#eff6ff;
+    --border:#d9dee3; --code-bg:#f6f8fa; --code-fg:#1f2328; --kw:#cf222e; --str:#0a3069;
+    --note:#fff8e6; --note-bd:#ffd56a; --warn:#fff1f0; --warn-bd:#ff8182;
+    --good:#e6f4ea; --good-bd:#34a853; --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Helvetica,Arial,sans-serif;line-height:1.75;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px 80px}
+  header.hero{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#3b82f6 100%);color:#fff;padding:56px 24px 48px;border-radius:0 0 18px 18px;box-shadow:var(--shadow)}
+  header.hero .inner{max-width:920px;margin:0 auto}
+  header.hero h1{font-size:34px;margin:0 0 10px;line-height:1.3;font-weight:800}
+  header.hero .sub{font-size:17px;opacity:.92;margin:0 0 18px}
+  header.hero .meta{display:flex;flex-wrap:wrap;gap:8px}
+  header.hero .tag{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);padding:4px 12px;border-radius:999px;font-size:13px}
+  .toc{background:var(--accent-soft);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:28px 0}
+  .toc h2{margin:0 0 10px;font-size:18px;color:var(--accent)}
+  .toc ol{margin:0;padding-left:22px}
+  .toc li{margin:5px 0}
+  .toc a{color:var(--fg);text-decoration:none;border-bottom:1px dashed transparent}
+  .toc a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+  h2.sec{font-size:24px;margin:48px 0 4px;padding-bottom:8px;border-bottom:2px solid var(--accent);color:#0b2a6b}
+  h3.sub{font-size:19px;margin:34px 0 6px;color:#16325f}
+  h4{font-size:16px;margin:22px 0 4px;color:#333}
+  p{margin:8px 0}
+  ul,ol{margin:8px 0;padding-left:24px}
+  li{margin:4px 0}
+  code{font-family:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;background:var(--code-bg);padding:1px 6px;border-radius:4px;font-size:13.5px;color:var(--code-fg)}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;font-size:13px;line-height:1.6}
+  pre code{background:none;padding:0;font-size:13px;color:var(--code-fg)}
+  /* tiny syntax tint */
+  .k{color:var(--kw)} .s{color:var(--str)} .c{color:#6a737d;font-style:italic} .n{color:#6639ba}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--border);padding:8px 12px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;font-weight:650}
+  tr:nth-child(even) td{background:#fbfcfd}
+  .callout{border-left:4px solid var(--note-bd);background:var(--note);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .callout.warn{border-color:var(--warn-bd);background:var(--warn)}
+  .callout.good{border-color:var(--good-bd);background:var(--good)}
+  .callout .t{font-weight:700;margin-bottom:4px;display:block}
+  .quiz{border:1px dashed var(--border);background:#fcfcfd;border-radius:8px;padding:14px 18px;margin:14px 0}
+  .quiz .q{font-weight:700;color:#16325f}
+  .figure{font-size:13px;color:var(--muted);text-align:center;margin:4px 0 18px}
+  .pillar{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+  .card{border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:#fff;box-shadow:var(--shadow)}
+  .card h4{margin:0 0 6px;color:var(--accent)}
+  .card p{margin:0;font-size:14px;color:var(--muted)}
+  footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--border);color:var(--muted);font-size:13px;text-align:center}
+  .anchor-hint{font-size:12px;color:var(--muted)}
+  .running{font-family:monospace;background:#0f172a;color:#e2e8f0;border-radius:8px;padding:12px 16px;margin:12px 0;overflow-x:auto;font-size:13px;line-height:1.6}
+  .running .out{color:#7dd3fc}
+  details{margin:12px 0;border:1px solid var(--border);border-radius:8px;padding:8px 14px;background:#fbfcfd}
+  details summary{cursor:pointer;font-weight:650;color:#16325f}
+  @media(max-width:640px){.pillar{grid-template-columns:1fr}header.hero h1{font-size:26px}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="inner">
+    <h1>SQL 数据库系统原理及应用</h1>
+    <p class="sub">从原理到实战，一次讲透 · 关系模型 → 查询编程 → 性能优化 → 事务并发 → 工程接入 → 架构前沿</p>
+    <div class="meta">
+      <span class="tag">原理篇</span>
+      <span class="tag">查询编程</span>
+      <span class="tag">性能优化</span>
+      <span class="tag">事务并发</span>
+      <span class="tag">工程实战</span>
+      <span class="tag">架构前沿</span>
+    </div>
+    <p class="sub" style="margin-top:14px;font-size:13px;opacity:.82">基于开源学习仓库 study-note-for-java&amp;sql 的真实编译运行结果整理 · 整理：Operit AI ｜ 2026-09</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- TOC -->
+<nav class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#p1">一、原理篇：数据库系统为什么存在</a></li>
+    <li><a href="#p2">二、查询编程篇：写出工业级 SQL</a></li>
+    <li><a href="#p3">三、性能优化篇：让 SQL 跑得快</a></li>
+    <li><a href="#p4">四、事务与并发篇：不出事</a></li>
+    <li><a href="#p5">五、工程实战篇：Java 接入数据库</a></li>
+    <li><a href="#p6">六、架构与前沿篇：真实系统长什么样</a></li>
+    <li><a href="#ax">附录：真实运行输出 · 面试速查 · 学习路径</a></li>
+  </ol>
+</nav>
+
+<div class="callout good">
+  <span class="t">导读 · 三条主线</span>
+  工业界对数据库能力的要求可以归纳为三句话：<b>写得出</b>（复杂查询、窗口函数、多表分析）、<b>跑得快</b>（索引设计、执行计划、慢查询治理）、<b>不出事</b>（事务、锁、一致性、安全）。本教程按"原理 → 实战"递进，每一节都配有可运行代码或真实运行结果，拒绝纸上谈兵。
+</div>
+
+<!-- ============ PART 1 ============ -->
+<h2 class="sec" id="p1">一、原理篇：数据库系统为什么存在</h2>
+
+<h3 class="sub">1.1 灵魂问题：为什么需要"两个东西"</h3>
+<p>理解数据库系统的第一步，是搞清楚 <b>应用层（Java 等）</b> 与 <b>数据层（数据库）</b> 各自的意义，以及它们如何配合。</p>
+<div class="pillar">
+  <div class="card"><h4>只有 Java，没数据库</h4><p>数据存内存 → 进程一停全丢；多用户同时改同一条 → 互相覆盖；要"按地区分组统计余额"得手写几百行循环。没有持久化、没有并发控制、没有声明式集合运算。</p></div>
+  <div class="card"><h4>只有数据库，没 Java</h4><p>业务规则无法优雅表达（积分怎么算？风控怎么判？）；无法对接界面、网络协议、第三方系统；没有面向对象、没有生态。</p></div>
+  <div class="card"><h4>结论</h4><p>Java 管"怎么做业务"，数据库管"怎么守住数据"。两者分工协作，<b>契约是 SQL + 事务</b>。</p></div>
+</div>
+
+<h3 class="sub">1.2 分工模型：大脑与仓库</h3>
+<table>
+<tr><th>维度</th><th>Java（应用层）</th><th>SQL 数据库（数据层）</th></tr>
+<tr><td>管什么</td><td>业务流程、规则判断、交互</td><td>数据的存储、索引、并发、事务</td></tr>
+<tr><td>擅长</td><td>面向对象、复杂逻辑、生态</td><td>集合运算、持久化、一致性保证</td></tr>
+<tr><td>生命周期</td><td>进程级（可重启、可多实例）</td><td>数据级（比应用活得长）</td></tr>
+<tr><td>故障后果</td><td>服务暂时不可用，数据没事</td><td>数据损坏/丢失，灾难性</td></tr>
+<tr><td>一句话</td><td>"怎么做事"</td><td>"记住事实，并且不乱"</td></tr>
+</table>
+<div class="callout"><span class="t">架构直觉（最重要的认知升级）</span>数据库不是"Java 程序的一部分"，而是<b>独立的一层</b>。Java 进程可以重启、可以多实例、甚至可以换成 Go/Python 重写——数据安然无恙。所以架构上叫它"数据层"：应用是"租客"，数据是"房子"。</p></div>
+
+<h3 class="sub">1.3 关系模型与表设计</h3>
+<h4>核心概念一句话版</h4>
+<p>表=二维结构；行=记录；列=字段；<b>主键</b>=唯一标识（InnoDB 中主键就是聚簇索引）；<b>外键</b>=引用完整性；约束=NOT NULL / UNIQUE / CHECK / DEFAULT。</p>
+
+<h4>设计原则</h4>
+<ul>
+<li><b>三大范式</b>：1NF 列不可再分；2NF 消除部分依赖；3NF 消除传递依赖。</li>
+<li><b>工业实践：不迷信范式，适度反范式。</b>例：订单表冗余"下单时的商品名 / 收货地址"——商品可能改名，订单要保留<b>历史快照</b>。</li>
+<li><b>校验分工</b>：数据库约束兜底 + 应用层校验为主（错误信息更友好）。</li>
+</ul>
+
+<h4>字段类型选择速查表</h4>
+<table>
+<tr><th>场景</th><th>推荐类型</th><th>说明</th></tr>
+<tr><td>主键</td><td>BIGINT UNSIGNED 自增 / 雪花 ID</td><td>分布式系统用趋势递增的雪花 ID，避免写入热点</td></tr>
+<tr><td>金额</td><td>DECIMAL(10,2)</td><td><b>绝不用 FLOAT/DOUBLE</b>（二进制浮点误差：0.1+0.2≠0.3）</td></tr>
+<tr><td>时间</td><td>DATETIME / TIMESTAMP</td><td>TIMESTAMP 有 2038 问题；高精度用 DATETIME(3)</td></tr>
+<tr><td>短字符串</td><td>VARCHAR(N)</td><td>N 影响排序内存与索引大小，按业务估算</td></tr>
+<tr><td>布尔</td><td>TINYINT(1)</td><td>MySQL 没有真正的 BOOLEAN</td></tr>
+<tr><td>半结构化</td><td>JSON / JSONB(PG)</td><td>PG 的 jsonb 可建索引，更推荐</td></tr>
+<tr><td>枚举</td><td>TINYINT + 字典表</td><td>比 ENUM 容易演进（加值不改表结构）</td></tr>
+</table>
+
+<div class="callout warn"><span class="t">字符集避坑</span>一律用 <b>utf8mb4</b>——MySQL 的 "utf8" 是 3 字节残缺版，存不了 emoji 等 4 字节字符。排序规则常用 utf8mb4_unicode_ci / utf8mb4_0900_ai_ci。</p></div>
+
+<h4>建表"工业三件套"</h4>
+<pre><code><span class="k">CREATE TABLE</span> orders (
+  id         <span class="k">BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY</span>,
+  created_at <span class="k">DATETIME NOT NULL DEFAULT</span> <span class="k">CURRENT_TIMESTAMP</span>,
+  updated_at <span class="k">DATETIME NOT NULL DEFAULT</span> <span class="k">CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</span>
+);</code></pre>
+
+<h3 class="sub">1.4 SQL 语言全景与执行顺序</h3>
+<h4>语言分类</h4>
+<table>
+<tr><th>类别</th><th>语句</th><th>用途</th></tr>
+<tr><td>DDL</td><td>CREATE / ALTER / DROP / TRUNCATE</td><td>定义结构</td></tr>
+<tr><td>DML</td><td>INSERT / UPDATE / DELETE</td><td>修改数据</td></tr>
+<tr><td>DQL</td><td>SELECT</td><td>查询</td></tr>
+<tr><td>DCL</td><td>GRANT / REVOKE</td><td>权限</td></tr>
+<tr><td>TCL</td><td>BEGIN / COMMIT / ROLLBACK / SAVEPOINT</td><td>事务</td></tr>
+</table>
+
+<h4>逻辑执行顺序（面试必问、优化基础）</h4>
+<pre><code><span class="k">FROM</span> → JOIN/ON → <span class="k">WHERE</span> → <span class="k">GROUP BY</span> → <span class="k">HAVING</span> → <span class="k">SELECT</span> → <span class="k">DISTINCT</span> → <span class="k">ORDER BY</span> → <span class="k">LIMIT</span></code></pre>
+<div class="callout"><span class="t">三条推论</span>
+<ul style="margin:4px 0 0">
+<li>WHERE 里不能用 SELECT 定义的别名（SELECT 还没执行）→ 用子查询或重复表达式；</li>
+<li>聚合过滤必须用 HAVING；</li>
+<li>能尽早过滤就尽早过滤：能在 WHERE 做的别拖到 HAVING / ORDER BY。</li>
+</ul></div>
+
+<h4>NULL 与三值逻辑（高频陷阱）</h4>
+<ul>
+<li><code>NULL = NULL</code> 结果是 NULL（不是 TRUE）→ 判断用 <code>IS NULL</code> / <code>IS NOT NULL</code>；</li>
+<li><code>COUNT(*)</code> 数行数；<code>COUNT(列)</code> 忽略 NULL；</li>
+<li><b><code>NOT IN (子查询含 NULL)</code> 会整体失效、返回空集</b> → 改用 <code>NOT EXISTS</code>；</li>
+<li>空值函数：<code>COALESCE</code>（标准）、<code>IFNULL</code>（MySQL）、<code>NULLIF(a,b)</code>（相等则返回 NULL，可用于防除零）。</li>
+</ul>
+
+<!-- ============ PART 2 ============ -->
+<h2 class="sec" id="p2">二、查询编程篇：写出工业级 SQL</h2>
+
+<h3 class="sub">2.1 JOIN 家族</h3>
+<table>
+<tr><th>类型</th><th>含义</th><th>典型场景</th></tr>
+<tr><td>INNER JOIN</td><td>交集</td><td>常规关联</td></tr>
+<tr><td>LEFT JOIN</td><td>左表全保留</td><td>主表 + 可选关联（"没下过单也要列出用户"）</td></tr>
+<tr><td>RIGHT JOIN</td><td>右表全保留</td><td>少用，习惯改写为 LEFT</td></tr>
+<tr><td>FULL JOIN</td><td>并集</td><td>PG/Oracle 支持；MySQL 用 UNION 模拟</td></tr>
+<tr><td>CROSS JOIN</td><td>笛卡尔积</td><td>生成序列、组合枚举</td></tr>
+<tr><td>自连接</td><td>表与自己连</td><td>层级（员工-经理）、行间对比</td></tr>
+</table>
+<pre><code><span class="k">SELECT</span> e.name <span class="k">AS</span> 员工, d.name <span class="k">AS</span> 部门, <span class="k">COALESCE</span>(m.name, <span class="s">'—'</span>) <span class="k">AS</span> 经理
+<span class="k">FROM</span> emp e
+<span class="k">JOIN</span> dept d <span class="k">ON</span> e.dept_id = d.id      <span class="c">-- 内连接</span>
+<span class="k">LEFT JOIN</span> emp m <span class="k">ON</span> e.mgr_id = m.id;  <span class="c">-- 左连接 + 自连接</span></code></pre>
+
+<h3 class="sub">2.2 子查询 vs EXISTS vs JOIN</h3>
+<ul>
+<li><b>标量子查询</b>：返回单值，可放 SELECT / WHERE；</li>
+<li><b>IN</b>：适合"子查询结果集小"；</li>
+<li><b>EXISTS</b>：短路语义，适合"子查询大、命中即止"（找到一条就不再扫）；</li>
+<li>很多场景 JOIN 可替代且更可控；核心直觉是<b>"小表驱动大表"</b>；</li>
+<li>注意去重语义：JOIN 可能放大行数（一对多），EXISTS 不会。</li>
+</ul>
+
+<h3 class="sub">2.3 聚合与分组</h3>
+<ul>
+<li>GROUP BY + HAVING 是报表骨架；</li>
+<li>MySQL：<code>WITH ROLLUP</code> 出小计/总计；<code>GROUP_CONCAT</code> 聚合字符串；</li>
+<li><b>ONLY_FULL_GROUP_BY</b>（MySQL 5.7+ 默认开启）：非聚合列必须出现在 GROUP BY 里 → 保证结果确定性。</li>
+</ul>
+
+<h3 class="sub">2.4 窗口函数（工业分水岭）</h3>
+<p>语法：<code>函数() OVER (PARTITION BY 分组 ORDER BY 排序 [ROWS/RANGE 帧])</code></p>
+<table>
+<tr><th>类别</th><th>函数</th><th>典型场景</th></tr>
+<tr><td>排名</td><td>ROW_NUMBER / RANK / DENSE_RANK</td><td>排名、去重、TopN</td></tr>
+<tr><td>偏移</td><td>LAG / LEAD / FIRST_VALUE / LAST_VALUE</td><td>环比同比、前后行对比</td></tr>
+<tr><td>聚合</td><td>SUM / COUNT / AVG / MAX / MIN ... OVER</td><td>累计值、移动平均、占比</td></tr>
+</table>
+<p><b>三个必背模板：</b></p>
+<pre><code><span class="c">-- ① 分组 TopN（窗口函数在 WHERE 之后计算，不能直接 WHERE rn<=N，要套一层）</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> (
+  <span class="k">SELECT</span> *, <span class="k">ROW_NUMBER</span>() <span class="k">OVER</span> (<span class="k">PARTITION BY</span> 组 <span class="k">ORDER BY</span> 值 <span class="k">DESC</span>) <span class="k">AS</span> rn
+  <span class="k">FROM</span> t
+) x <span class="k">WHERE</span> rn &lt;= 3;
+
+<span class="c">-- ② 累计值（默认帧：分组内首行 → 当前行）</span>
+<span class="k">SELECT</span> dt, amt, <span class="k">SUM</span>(amt) <span class="k">OVER</span> (<span class="k">ORDER BY</span> dt) <span class="k">AS</span> running_total <span class="k">FROM</span> t;
+
+<span class="c">-- ③ 环比（与上一行对比）</span>
+<span class="k">SELECT</span> dt, amt,
+       <span class="k">LAG</span>(amt) <span class="k">OVER</span> (<span class="k">ORDER BY</span> dt) <span class="k">AS</span> prev_amt,
+       amt - <span class="k">LAG</span>(amt) <span class="k">OVER</span> (<span class="k">ORDER BY</span> dt) <span class="k">AS</span> diff
+<span class="k">FROM</span> t;</code></pre>
+<p class="figure">真实运行结果节选（注意市场部并列薪资下的行号/名次差异）</p>
+<table>
+<tr><th>员工</th><th>部门</th><th>薪资</th><th>ROW_NUMBER</th><th>RANK</th></tr>
+<tr><td>赵敏</td><td>2</td><td>20000</td><td>1</td><td>1</td></tr>
+<tr><td>刘洋</td><td>2</td><td>20000</td><td>2</td><td><b>1</b> ← 并列同名次</td></tr>
+</table>
+
+<h3 class="sub">2.5 CTE 与递归 CTE</h3>
+<ul>
+<li><code>WITH cte AS (...)</code> 把复杂 SQL 分层，可读性大幅提升；</li>
+<li>递归模板（组织树 / 菜单树 / 路径搜索）：</li>
+</ul>
+<pre><code><span class="k">WITH RECURSIVE</span> tree <span class="k">AS</span> (
+  <span class="k">SELECT</span> id, name, 1 <span class="k">AS</span> lvl <span class="k">FROM</span> org <span class="k">WHERE</span> parent_id <span class="k">IS NULL</span>   <span class="c">-- 起点：根节点</span>
+  <span class="k">UNION ALL</span>
+  <span class="k">SELECT</span> o.id, o.name, t.lvl + 1
+  <span class="k">FROM</span> org o <span class="k">JOIN</span> tree t <span class="k">ON</span> o.parent_id = t.id          <span class="c">-- 递归：挂到上级下面</span>
+)
+<span class="k">SELECT</span> * <span class="k">FROM</span> tree;</code></pre>
+
+<h3 class="sub">2.6 经典工业题型库</h3>
+<table>
+<tr><th>题型</th><th>方法</th><th>关键点</th></tr>
+<tr><td>连续 N 天登录</td><td>日期 − 行号 = 常数分组</td><td>窗口函数 + GROUP BY</td></tr>
+<tr><td>分组 TopN</td><td>ROW_NUMBER 套子查询</td><td>窗口函数计算时机</td></tr>
+<tr><td>行转列</td><td>CASE WHEN + SUM</td><td>MySQL 无 PIVOT 语法</td></tr>
+<tr><td>同比 / 环比</td><td>LAG / 自连接偏移</td><td>注意缺月补零</td></tr>
+<tr><td>第 N 高薪水</td><td>DENSE_RANK / LIMIT OFFSET</td><td>"并列名次"的语义</td></tr>
+<tr><td>留存率 / 复购率</td><td>首次活跃日 + 日期差 + COUNT DISTINCT</td><td>先想清楚"数据粒度"</td></tr>
+<tr><td>中位数</td><td>窗口函数 + 位置判定</td><td>区分奇偶个数</td></tr>
+</table>
+
+<!-- ============ PART 3 ============ -->
+<h2 class="sec" id="p3">三、性能优化篇：让 SQL 跑得快</h2>
+
+<h3 class="sub">3.1 为什么是 B+ 树</h3>
+<ul>
+<li>非叶子节点只存键 → 一个节点塞更多键 → 树更矮（3～4 层可撑千万级数据）；</li>
+<li>叶子节点存数据且用链表相连 → 范围查询高效；</li>
+<li>对比：哈希索引只支持等值查询；B 树非叶子存数据导致树更高、范围查询差。</li>
+</ul>
+
+<h3 class="sub">3.2 InnoDB 索引体系</h3>
+<ul>
+<li><b>聚簇索引（主键）</b>：叶子节点 = 整行数据，表数据就长在它身上；</li>
+<li><b>二级索引</b>：叶子 = 索引列 + 主键值；</li>
+<li><b>回表</b>：二级索引找到主键 → 再回聚簇索引取整行；</li>
+<li><b>覆盖索引</b>：查询需要的列全在索引里 → 免回表（性能提升常用手段）；</li>
+<li><b>联合索引最左前缀</b>：(a,b,c) 可支撑 a / a,b / a,b,c 的组合；范围查询会中断后续列；</li>
+<li><b>索引下推 ICP</b>（MySQL 5.6+）：过滤条件下推到引擎层，减少回表。</li>
+</ul>
+
+<h3 class="sub">3.3 索引失效清单（高频踩坑）</h3>
+<table>
+<tr><th>写法</th><th>问题</th><th>改写</th></tr>
+<tr><td><code>WHERE YEAR(dt)=2026</code></td><td>列上套函数</td><td><code>dt &gt;= '2026-01-01' AND dt &lt; '2027-01-01'</code></td></tr>
+<tr><td><code>WHERE user_id = '123'</code>（int 列）</td><td>隐式类型转换</td><td>类型匹配</td></tr>
+<tr><td><code>LIKE '%abc'</code></td><td>前缀模糊</td><td>改后缀 / 全文索引 / 向量检索</td></tr>
+<tr><td><code>a=1 OR b=2</code>（b 无索引）</td><td>OR 拖累</td><td>拆成 UNION</td></tr>
+<tr><td><code>!= / NOT IN</code>（大范围）</td><td>低选择性</td><td>视情况换分段查询</td></tr>
+<tr><td>跳过联合索引最左列</td><td>断链</td><td>调整索引顺序</td></tr>
+<tr><td>ORDER BY 与索引序不一致</td><td>filesort</td><td>让排序用上索引</td></tr>
+</table>
+
+<h3 class="sub">3.4 EXPLAIN 解读</h3>
+<ul>
+<li>核心列：<code>type</code>（访问类型）、<code>key</code>（用到哪个索引）、<code>rows</code>（预估行数）、<code>filtered</code>（过滤比）、<code>Extra</code>（关键信号）；</li>
+<li>type 等级：<code>system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; ALL</code>，出现 ALL（全表扫描）要警觉；</li>
+<li>Extra 信号：<code>Using index</code>（覆盖索引，优）｜ <code>Using filesort</code>（额外排序）｜ <code>Using temporary</code>（临时表）｜ <code>Using index condition</code>（ICP）。</li>
+</ul>
+<div class="running">加索引前: <span class="out">SCAN orders</span>
+加索引后: <span class="out">SEARCH orders USING INDEX idx_orders_user (user_id=?)</span></div>
+
+<h3 class="sub">3.5 深分页优化（大厂高频）</h3>
+<pre><code><span class="c">-- 慢：先扫 100 万行再丢掉</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> t <span class="k">ORDER BY</span> id <span class="k">LIMIT</span> 1000000, 20;
+
+<span class="c">-- 快①：延迟关联（先用覆盖索引拿主键）</span>
+<span class="k">SELECT</span> t.* <span class="k">FROM</span> t
+<span class="k">JOIN</span> (<span class="k">SELECT</span> id <span class="k">FROM</span> t <span class="k">ORDER BY</span> id <span class="k">LIMIT</span> 1000000, 20) x <span class="k">ON</span> t.id = x.id;
+
+<span class="c">-- 快②：游标(keyset)分页——记住上一页最后的 id</span>
+<span class="k">SELECT</span> * <span class="k">FROM</span> t <span class="k">WHERE</span> id &gt; 1000200 <span class="k">ORDER BY</span> id <span class="k">LIMIT</span> 20;</code></pre>
+
+<h3 class="sub">3.6 慢查询治理流程</h3>
+<pre><code>监控（慢日志 / performance_schema）→ 定位 TOP SQL → EXPLAIN 分析
+→ 三级手段（改索引 / 改 SQL / 改架构）→ 回归验证</code></pre>
+<p>工具：pt-query-digest、mysqld_exporter + Prometheus + Grafana。</p>
+
+<!-- ============ PART 4 ============ -->
+<h2 class="sec" id="p4">四、事务与并发篇：不出事</h2>
+
+<h3 class="sub">4.1 ACID 的工业含义</h3>
+<table>
+<tr><th>字母</th><th>含义</th><th>实现</th></tr>
+<tr><td>A 原子性</td><td>要么全成要么全回滚</td><td>undo log 实现</td></tr>
+<tr><td>C 一致性</td><td>约束与业务规则不被破坏</td><td>是目的，A/I/D 是手段</td></tr>
+<tr><td>I 隔离性</td><td>并发事务互不干扰</td><td>锁 + MVCC 实现</td></tr>
+<tr><td>D 持久性</td><td>提交即落盘</td><td>redo log，WAL 机制</td></tr>
+</table>
+
+<h3 class="sub">4.2 隔离级别</h3>
+<table>
+<tr><th>级别</th><th>脏读</th><th>不可重复读</th><th>幻读</th><th>默认于</th></tr>
+<tr><td>READ UNCOMMITTED</td><td>✗</td><td>✗</td><td>✗</td><td>几乎不用</td></tr>
+<tr><td>READ COMMITTED</td><td>✓</td><td>✗</td><td>✗</td><td>PG / Oracle 默认</td></tr>
+<tr><td>REPEATABLE READ</td><td>✓</td><td>✓</td><td>✗（InnoDB 基本解决）</td><td><b>MySQL 默认</b></td></tr>
+<tr><td>SERIALIZABLE</td><td>✓</td><td>✓</td><td>✓</td><td>性能差，极少用</td></tr>
+</table>
+
+<h3 class="sub">4.3 MVCC（多版本并发控制）</h3>
+<p>三件套：</p>
+<ol>
+<li>每行有隐藏列：<code>trx_id</code>（最后修改它的事务）+ <code>roll_pointer</code>（指向 undo log 中的旧版本）；</li>
+<li>undo log 把旧版本串成<b>版本链</b>；</li>
+<li><b>ReadView</b>（活跃事务列表）判断"哪个版本对当前事务可见"。</li>
+</ol>
+<ul>
+<li><b>RC</b>：每次 SELECT 都生成新 ReadView → 能看到别人已提交的新数据；</li>
+<li><b>RR</b>：第一次 SELECT 生成后复用 → 全程快照一致；</li>
+<li>快照读（普通 SELECT）走 MVCC；当前读（<code>FOR UPDATE</code>、UPDATE/DELETE）读最新版本并加锁。</li>
+</ul>
+
+<h3 class="sub">4.4 锁体系</h3>
+<table>
+<tr><th>锁</th><th>说明</th></tr>
+<tr><td>共享锁 S / 排他锁 X</td><td>读锁 / 写锁</td></tr>
+<tr><td>意向锁 IS/IX</td><td>表级"意图"标志，快速判断表内有无行锁</td></tr>
+<tr><td>记录锁 Record Lock</td><td>锁住单行索引记录</td></tr>
+<tr><td>间隙锁 Gap Lock</td><td>锁索引间隙，防止插入（RR 下基本默认开启）</td></tr>
+<tr><td>临键锁 Next-Key Lock</td><td>记录 + 前间隙，RR 防幻读的关键</td></tr>
+<tr><td>插入意向锁</td><td>INSERT 等待间隙时的信号锁</td></tr>
+</table>
+<div class="callout"><span class="t">记忆点</span><b>RC 基本关闭间隙锁</b>（更少死锁）；RR 默认开启（更防幻读但更易死锁）。</div>
+
+<h3 class="sub">4.5 死锁：排查与预防</h3>
+<ul>
+<li>排查：<code>SHOW ENGINE INNODB STATUS</code> → LATEST DETECTED DEADLOCK 段，看两个事务的 SQL、持有的锁、等待的锁；</li>
+<li>预防：固定访问顺序、小事务、缩短锁持有时间、尽量命中索引（防行锁升级全表）、必要时降为 RC、业务侧乐观锁兜底。</li>
+</ul>
+
+<h3 class="sub">4.6 乐观锁 vs 悲观锁</h3>
+<ul>
+<li><b>悲观锁</b>：<code>SELECT ... FOR UPDATE</code>，冲突激烈场景；</li>
+<li><b>乐观锁</b>：版本号 CAS——<code>UPDATE t SET version = version + 1 WHERE id = ? AND version = ?</code>，冲突少场景（互联网主流）。</li>
+</ul>
+
+<h3 class="sub">4.7 分布式事务方案选型</h3>
+<table>
+<tr><th>方案</th><th>一致性</th><th>侵入性</th><th>典型场景</th></tr>
+<tr><td>2PC / XA</td><td>强一致</td><td>低</td><td>传统金融；性能差</td></tr>
+<tr><td>TCC</td><td>最终一致</td><td>高</td><td>支付核心</td></tr>
+<tr><td>Saga</td><td>最终一致</td><td>中</td><td>长流程履约（订单-库存-物流）</td></tr>
+<tr><td>本地消息表 / 事务消息</td><td>最终一致</td><td>低</td><td><b>大多数互联网业务</b></td></tr>
+<tr><td>Seata AT</td><td>最终一致</td><td>低</td><td>Java 生态标配</td></tr>
+</table>
+
+<!-- ============ PART 5 ============ -->
+<h2 class="sec" id="p5">五、工程实战篇：Java 接入数据库</h2>
+
+<h3 class="sub">5.1 桥：JDBC（Java Database Connectivity）</h3>
+<ul>
+<li>1997 年诞生，至今仍是 <b>Java 访问一切数据库的底座</b>；</li>
+<li><b>面向接口编程的教科书案例</b>：Java 代码只依赖 <code>java.sql.*</code> 接口，数据库厂商提供"驱动"实现；</li>
+<li>数据流向：<code>Java 程序 → JDBC API → 驱动(jar包) → 数据库协议 → 数据库内核</code>；</li>
+<li>JDBC URL 格式（换数据库只改 URL 和驱动）：<code>jdbc:mysql://host:3306/db</code> / <code>jdbc:postgresql://host:5432/db</code> / <code>jdbc:sqlite:data/bank.db</code>。</li>
+</ul>
+
+<h3 class="sub">5.2 映射：表 ↔ 对象（ORM 的起源）</h3>
+<pre><code>数据库的表      &lt;==&gt;  Java 的类
+表中的一行      &lt;==&gt;  类的一个对象
+表中的一列      &lt;==&gt;  对象的字段
+外键引用        &lt;==&gt;  对象引用</code></pre>
+<p>真实运行结果——<code>ResultSet</code> 的每一行被"翻译"成 Java 对象：</p>
+<div class="running">[4] SELECT 结果映射为 Java 对象:
+      <span class="out">Account{id=1, owner='张三', balance=1000.00}</span>
+      <span class="out">Account{id=2, owner='李四', balance=500.00}</span></div>
+<div class="callout"><span class="t">阻抗失配（Object-Relational Impedance Mismatch）</span>对象有继承、引用、多态；关系表只有扁平的二维结构。这个"缝隙"就是 ORM 框架（MyBatis / Hibernate）存在的意义。</div>
+
+<h3 class="sub">5.3 JDBC 六步（完整骨架）</h3>
+<pre><code><span class="k">Class</span>.forName(<span class="s">"org.sqlite.JDBC"</span>);                              <span class="c">// 1. 加载驱动</span>
+<span class="k">try</span> (<span class="k">Connection</span> conn = DriverManager.getConnection(url)) {    <span class="c">// 2. 建立连接</span>
+    <span class="k">PreparedStatement</span> ps = conn.prepareStatement(           <span class="c">// 3. 创建语句对象</span>
+        <span class="s">"INSERT INTO account(owner, balance) VALUES (?, ?)"</span>);
+    ps.setString(1, <span class="s">"张三"</span>);                                  <span class="c">// 4. 绑定参数并执行</span>
+    ps.executeUpdate();
+    <span class="k">ResultSet</span> rs = ps.executeQuery(<span class="s">"SELECT * FROM account"</span>); <span class="c">// 5. 处理结果集</span>
+    <span class="k">while</span> (rs.next()) { ... }
+}                                                            <span class="c">// 6. 自动关闭资源</span></code></pre>
+
+<h3 class="sub">5.4 安全：SQL 注入攻防（真实攻击演示）</h3>
+<p><b>原理</b>：字符串拼接 SQL，让用户的"输入数据"越界成了"代码"。</p>
+<div class="running">输入: <span class="out">' OR '1'='1</span>
+
+[危险] 字符串拼接写法:
+SQL:  SELECT owner, balance FROM account WHERE owner = '' OR '1'='1'
+      查到 → 张三, 余额 1000.0     ← 全表数据泄露！
+      查到 → 李四, 余额 500.0
+
+[安全] PreparedStatement 写法:
+SQL:  SELECT owner, balance FROM account WHERE owner = ?   (参数: ' OR '1'='1)
+      共 0 条                     ← 攻击字符串只是普通字符，毫无破坏力</div>
+<div class="callout good"><span class="t">为什么预编译能免疫？</span>预编译让"SQL 结构"先定型上膛，参数永远是"子弹"——无论参数长什么样，都不会变成"枪的一部分"。</div>
+<div class="callout warn"><span class="t">工业延伸</span>MyBatis 的 <code>#{}</code> 就是 PreparedStatement 占位符（安全）；<code>${}</code> 是字符串拼接（危险，仅限动态表名等白名单场景）。学到这里，你就能从原理上解释"为什么面试必问 #{} 和 ${} 的区别"。</div>
+
+<h3 class="sub">5.5 一致性：事务（真实转账演示）</h3>
+<p><b>场景</b>：张三转 100 元给李四 = 两条 UPDATE，必须<b>同生共死</b>。</p>
+<table>
+<tr><th>场景</th><th>过程</th><th>结果</th></tr>
+<tr><td>① 正常转账</td><td>扣款 + 收款 → commit</td><td>张三 900 / 李四 600，总资产不变 ✓</td></tr>
+<tr><td>② 收款方不存在 → rollback</td><td>扣款后失败 → 全部回滚</td><td>张三 900 不变，钱没少 ✓</td></tr>
+<tr><td>③ <b>没有事务</b>保护</td><td>扣款成功（自动提交）后系统故障</td><td>张三 800，<b>100 元凭空消失</b> ✗</td></tr>
+</table>
+<p><b>Java 事务标准模板</b>（工业代码的骨架）：</p>
+<pre><code>conn.setAutoCommit(<span class="k">false</span>);          <span class="c">// 开启事务</span>
+<span class="k">try</span> {
+    <span class="c">// ... 扣款 UPDATE ...</span>
+    <span class="c">// ... 收款 UPDATE ...</span>
+    conn.commit();                  <span class="c">// 全部成功才提交</span>
+} <span class="k">catch</span> (<span class="k">SQLException</span> e) {
+    conn.rollback();                <span class="c">// 任何失败全部回滚</span>
+    <span class="k">throw</span> e;
+} <span class="k">finally</span> {
+    conn.setAutoCommit(<span class="k">true</span>);       <span class="c">// 恢复默认模式</span>
+}</code></pre>
+<div class="callout"><span class="t">为什么事务必须由数据库提供？</span>因为只有数据库知道"这两条 UPDATE 是一个整体"——崩溃恢复、并发隔离、锁管理都发生在数据库层，Java 单方面保证不了。<b>工业延伸</b>：Spring 的 <code>@Transactional</code> 注解，本质就是把上面这段模板代码用 AOP 自动包在了方法外面。</div>
+
+<h3 class="sub">5.6 效率：批处理与"落盘合并"（真实实测）</h3>
+<p><b>1000 条插入，三种写法的真实耗时：</b></p>
+<table>
+<tr><th>写法</th><th>耗时</th><th>原因</th></tr>
+<tr><td>(a) 逐条执行</td><td>5324 ms</td><td>每条 autocommit = 一次磁盘 fsync</td></tr>
+<tr><td>(b) 批处理（无事务）</td><td>5045 ms</td><td>网络/接口开销省了，但落盘次数没省</td></tr>
+<tr><td>(c) <b>批处理 + 事务</b></td><td><b>9 ms</b></td><td>1000 次 fsync 合并成 1 次</td></tr>
+</table>
+<div class="callout good"><span class="t">约 600 倍的差距</span>这是本次实操最震撼的数字——同样的 Java 代码能力，懂不懂数据库的落盘机制，性能天壤之别。<b>工业标配</b>：数据导入、日志批量写、ETL，全部使用"批处理 + 事务"。（网络数据库如 MySQL 上，批处理还能额外减少网络往返次数，差距会更明显。）</div>
+
+<h3 class="sub">5.7 持久化：数据不属于任何程序</h3>
+<p>实战中用 <b>Python</b> 读取了 <b>Java 写的</b>数据库文件：</p>
+<div class="running">== 用 Python 直接读取 Java 写下的数据库文件 ==
+account 表:
+   <span class="out">(1, '张三', 800.0)</span>
+   <span class="out">(2, '李四', 600.0)</span>
+tx_log 条数: 1000</div>
+<p>Java 进程可以重启、可以多实例、甚至可以换成 Go/Python 重写——<b>数据安然无恙</b>。这就是"数据层"独立存在的意义。</p>
+
+<h3 class="sub">5.8 从 JDBC 到 MyBatis：工业上究竟怎么写</h3>
+<table>
+<tr><th>阶段</th><th>工具</th><th>解决了什么</th><th>新代价</th></tr>
+<tr><td>手工时代</td><td>JDBC</td><td>能连数据库了</td><td>样板代码多、易写注入</td></tr>
+<tr><td>轻封装</td><td>Spring JdbcTemplate</td><td>消灭样板代码</td><td>SQL 仍散落各处</td></tr>
+<tr><td><b>半自动 ORM</b></td><td><b>MyBatis</b></td><td>SQL 与 Java 分离、映射自动化</td><td>XML/注解配置</td></tr>
+<tr><td>全自动 ORM</td><td>JPA / Hibernate</td><td>基本不写 SQL</td><td>复杂查询易失控</td></tr>
+<tr><td>增强</td><td>MyBatis-Plus</td><td>单表 CRUD 零 SQL</td><td>只适合简单场景</td></tr>
+</table>
+<ul>
+<li><b>连接池（HikariCP）</b>：连接是稀缺资源，工业上绝不"用完就关"，而是池化复用；</li>
+<li>MyBatis 要点：<code>#{}</code> 预编译占位符（安全，默认都用它）；<code>${}</code> 字符串拼接（有注入风险，仅用于动态表名/排序字段等，且必须白名单校验）；Mapper 接口 + XML 映射，复杂结果用 resultMap；</li>
+<li>学习路径建议：<b>原理从 JDBC 学起（你已完成），工程用 MyBatis / MyBatis-Plus，读别人的代码也不怕 JPA</b>。</li>
+</ul>
+
+<h3 class="sub">5.9 编程规范 checklist</h3>
+<ul>
+<li>☑ 禁止 <code>SELECT *</code>（改字段、走覆盖索引）；</li>
+<li>☑ 必须分页（禁止全量捞）；</li>
+<li>☑ 禁止循环里查库（N+1 问题）→ 用 IN 批量查或 JOIN；</li>
+<li>☑ 大事务拆小；连接池化并正确释放；</li>
+<li>☑ 写操作检查是否命中索引（把 EXPLAIN 写进 Code Review 清单）。</li>
+</ul>
+
+<div class="callout good"><span class="t">完整心智模型（一句话总结）</span>
+<pre style="margin:6px 0 0;background:transparent;border:none">用户请求
+   ↓
+Java 业务逻辑（事务边界、校验、流程）      ← Spring Boot / 你的代码
+   ↓
+JDBC / MyBatis（SQL + 参数）              ← 桥梁：契约是 SQL
+   ↓
+数据库（索引 / 事务 / 锁 / MVCC）          ← MySQL / PostgreSQL / SQLite
+   ↓
+结果集 → Java 对象 → 返回响应</pre>
+<b>口诀：Java 管逻辑，库管数据；接口是 SQL，契约是事务。</b> 分层各司其职——少了哪一层，都撑不起一个真实系统。</div>
+
+<!-- ============ PART 6 ============ -->
+<h2 class="sec" id="p6">六、架构与前沿篇：真实系统长什么样</h2>
+
+<h3 class="sub">6.1 工业架构常识</h3>
+<h4>主从复制</h4>
+<ul>
+<li>原理：主库写 <b>binlog</b> → 从库 IO 线程拉取写 relay log → SQL 线程重放；</li>
+<li>binlog 三格式：STATEMENT / <b>ROW</b>（推荐，确定性重放） / MIXED；</li>
+<li>复制模式：异步 / 半同步 / 组复制 MGR；</li>
+<li>CDC（变更数据捕获）：canal / Debezium 消费 binlog → 数据同步、缓存失效、搜索索引。</li>
+</ul>
+<h4>读写分离</h4>
+<p>写主读从；核心难题是<b>主从延迟</b>。对策：强一致场景强制走主库、半同步复制、业务上容忍读旧数据的场景才走从库。</p>
+<h4>分库分表</h4>
+<ul>
+<li>垂直拆分（按业务/字段）、水平拆分（按行）；</li>
+<li>中间件：ShardingSphere / Vitess / 云原生分布式数据库；</li>
+<li>难点：分片键设计、跨片 JOIN / 分页 / 聚合的代价、扩容（一致性哈希、双写迁移）。</li>
+</ul>
+<h4>连接池（以 HikariCP 为例）</h4>
+<ul>
+<li><code>maximumPoolSize</code> 不是越大越好（连接是稀缺资源），从 <code>CPU核数 × 2 + 磁盘数</code> 起步，压测调优；</li>
+<li><code>connectionTimeout</code>、<code>maxLifetime</code>（要小于 DB 的 wait_timeout）、<code>leakDetectionThreshold</code>。</li>
+</ul>
+<h4>数据库版本管理</h4>
+<p>Flyway / Liquibase：DDL 变更脚本化、进 Git、随 CI/CD 自动执行，可审计。</p>
+
+<h3 class="sub">6.2 时代背景：2025–2026 数据库在发生什么</h3>
+<h4>格局</h4>
+<table>
+<tr><th>类型</th><th>代表</th><th>用途</th></tr>
+<tr><td>OLTP</td><td>MySQL（9.x 已迭代至 9.7）、PostgreSQL 18、Oracle</td><td>在线交易</td></tr>
+<tr><td>OLAP</td><td>ClickHouse、Doris、StarRocks、DuckDB</td><td>分析报表</td></tr>
+<tr><td>HTAP</td><td>TiDB、OceanBase、PolarDB</td><td>一份数据两种负载</td></tr>
+<tr><td>向量</td><td>Milvus、Qdrant、pgvector、Redis 8</td><td>AI 检索</td></tr>
+</table>
+
+<h4>向量检索进入 SQL（AI 时代的新能力）</h4>
+<pre><code><span class="c">-- pgvector：按"向量距离"排序，和普通 ORDER BY 无异（&lt;-&gt; 欧氏、&lt;=&gt; 余弦、&lt;#&gt; 内积）</span>
+<span class="k">SELECT</span> id, content <span class="k">FROM</span> docs
+<span class="k">ORDER BY</span> embedding &lt;-&gt; <span class="s">'[0.12, 0.34, ...]'</span>
+<span class="k">LIMIT</span> 10;
+
+<span class="c">-- MySQL 9.x：原生 VECTOR 类型 + STRING_TO_VECTOR()/VECTOR_DIM() 等函数</span>
+<span class="c">-- （DISTANCE() 距离函数随 MySQL HeatWave / MySQL AI 发行版提供）</span></code></pre>
+<div class="callout"><span class="t">AI × 数据库</span>RAG 的向量检索层、Agent 的长期记忆层，正在被关系数据库"吸收"——SQL 技能在 AI 时代不降反升。<b>NL2SQL（Text2SQL）</b>：自然语言 → SQL，Agent 直连数据库查询；自动索引推荐、参数自调优（云数据库自治能力）；LLM 应用的元数据（用户、会话、文档权限）依然靠关系库管理。</div>
+
+<!-- ============ APPENDIX ============ -->
+<h2 class="sec" id="ax">附录：真实运行输出 · 面试速查 · 学习路径</h2>
+
+<details>
+<summary>附录 A：真实运行输出节选（来自 sql-demo/sql_demo.py 实际执行，SQLite 3.45.1）</summary>
+<p><b>① 连续 3 天登录（日期-行号分组法）</b></p>
+<div class="running">(1, '2026-03-01', 3)
+<span class="out">← 用户1从 3-01 起连续登录 3 天；用户2只有 3-01/3-03/3-04，未连续 3 天，被正确过滤</span></div>
+<p><b>② ROW_NUMBER vs RANK（并列名次语义）</b></p>
+<div class="running">('赵敏', 2, 20000.0, rn=1, rk=1)
+('刘洋', 2, 20000.0, rn=2, rk=1)   <span class="out">← RANK 并列同名次，ROW_NUMBER 强制不重复</span></div>
+<p><b>③ 索引效果对比（EXPLAIN）</b></p>
+<div class="running">加索引前: SCAN orders
+加索引后: SEARCH orders USING INDEX idx_orders_user (user_id=?)</div>
+<p>完整输出见 sql-demo/demo_output.txt（含 JOIN、TopN、累计值、行转列、递归 CTE 等 9 组）。</p>
+</details>
+
+<details>
+<summary>附录 B：面试速查 10 问</summary>
+<ol>
+<li><b>SQL 逻辑执行顺序？</b> FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT。</li>
+<li><b>WHERE 与 HAVING 区别？</b> WHERE 过滤行（聚合前，能用索引）；HAVING 过滤组（聚合后）。</li>
+<li><b>CHAR 与 VARCHAR？</b> CHAR 定长可能补空格；VARCHAR 变长，N 影响内存与索引。</li>
+<li><b>COUNT(*) / COUNT(1) / COUNT(列)？</b> 前两者统计所有行；COUNT(列) 忽略 NULL。</li>
+<li><b>什么是回表？如何避免？</b> 二级索引 → 主键 → 聚簇索引取数；覆盖索引可避免。</li>
+<li><b>MySQL 默认隔离级别？幻读怎么解决？</b> RR；快照读靠 MVCC，当前读靠 Next-Key Lock。</li>
+<li><b>redo log 与 binlog 区别？</b> redo=引擎层、崩溃恢复、循环写；binlog=Server 层、归档/复制、追加写。</li>
+<li><b>为什么推荐自增主键？</b> 小且有序 → 插入不撕裂 B+ 树；二级索引叶子更小。</li>
+<li><b>深分页怎么优化？</b> 延迟关联 / keyset 游标分页。</li>
+<li><b>分布式事务怎么选？</b> 大多数业务用本地消息表 / Seata AT（最终一致）；强一致核心用 TCC/XA。</li>
+</ol>
+</details>
+
+<details>
+<summary>附录 C：学习路径与练习建议</summary>
+<h4>四阶段</h4>
+<table>
+<tr><th>阶段</th><th>目标</th><th>过招标准</th></tr>
+<tr><td>1. SQL 语法</td><td>CRUD + JOIN + 聚合</td><td>LeetCode 数据库简单题 20 道</td></tr>
+<tr><td>2. 分析能力</td><td>窗口函数 + CTE</td><td>连续登录 / 分组 TopN 能独立写出</td></tr>
+<tr><td>3. 性能</td><td>索引 + EXPLAIN</td><td>能解释一条慢 SQL 并给出 2 种优化方案</td></tr>
+<tr><td>4. 工程</td><td>事务 + 架构 + Java 接入</td><td>用 Spring Boot + MyBatis 完成完整小项目</td></tr>
+</table>
+<h4>练习资源</h4>
+<ul>
+<li>LeetCode Database（面试导向）、SQLZoo（交互式）、HackerRank SQL；</li>
+<li>动手：Docker 起 MySQL 8.4 / PostgreSQL 18，导入公开数据集；</li>
+<li>本工作区 sql-demo/sql_demo.py 可随时扩展新题目自测。</li>
+</ul>
+<h4>动手练习（改代码玩，从易到难）</h4>
+<ol>
+<li><b>Step1 加功能</b>：实现 <code>findByName(String name)</code>，返回单个 Account 对象；</li>
+<li><b>Step3 加业务</b>：给转账加"余额不足"校验。思考：先 SELECT 查余额再判断，还是直接用 <code>UPDATE ... WHERE balance &gt;= ?</code> 让数据库来判？哪个更安全？为什么？</li>
+<li><b>Step4 改参数</b>：把 N 改成 10000 再看差距；再试试"只加批处理、去掉事务"验证结论；</li>
+<li><b>挑战</b>：用两个线程模拟"同时给同一个人转账"，观察数据库的并发行为；</li>
+<li><b>进阶</b>：如果有 MySQL 环境，把 URL 换成 <code>jdbc:mysql://...</code>，体会"换数据库只改一行代码"——这就是 JDBC 抽象层的意义。</li>
+</ol>
+<h4>书单</h4>
+<p>《高性能 MySQL》《SQL 进阶教程》(MICK)《数据库系统概念》《PostgreSQL 修炼之道》</p>
+</details>
+
+<details>
+<summary>附录 D：配套可运行项目（全部实测通过）</summary>
+<table>
+<tr><th>项目</th><th>技术栈</th><th>内容</th></tr>
+<tr><td>javase-demo</td><td>Java</td><td>字节码反汇编、类型陷阱、OOP 多态、集合+Stream、现代语法、外部库、网络 + JUnit 测试</td></tr>
+<tr><td>java-sql-demo</td><td>Java + JDBC + SQLite</td><td>CRUD、SQL 注入攻防实录、转账事务、批处理性能对比</td></tr>
+<tr><td>sql-demo</td><td>Python + SQLite</td><td>JOIN、窗口函数、连续登录、EXPLAIN、索引实战（零依赖）</td></tr>
+<tr><td>library-api</td><td>Jakarta EE · 嵌入式 Tomcat</td><td>Servlet 路由、DAO 分层、事务借还、JOIN 统计</td></tr>
+<tr><td>order-service（原生）</td><td>Jakarta EE · 嵌入式 Tomcat</td><td>防超卖条件更新、状态守卫、15 并发压测</td></tr>
+<tr><td>order-service（Spring Boot）</td><td>Spring Boot 3.5</td><td>注解、IoC、@Transactional、与原生版逐行对照</td></tr>
+<tr><td>shortlink-service</td><td>Spring Boot 3.5</td><td>302 跳转、唯一约束、原子计数</td></tr>
+<tr><td>device-monitor</td><td>Java 17 · jSerialComm · SQLite</td><td>手写 Modbus TCP/RTU 帧、CRC16、串口抽象、入库、控制闭环</td></tr>
+<tr><td>web-monitor</td><td>Java EE · Servlet · 嵌入式 Tomcat</td><td>Web 看板、REST API、控制下发、断线自愈</td></tr>
+</table>
+</details>
+
+<footer>
+  本教程基于开源学习仓库 study-note-for-java&amp;sql 整理，所有代码与运行结果均经真实编译运行验证。<br>
+  AI 辅助整理，请结合实际工程判断。
+</footer>
+
+</div>
+</body>
+</html>
