@@ -1,19 +1,51 @@
-# Deployment Notes — 2026-09-24
+# Deployment Notes — 2026-09-25 (updated)
 
-## Live URL (temporary preview account)
-- Worker URL: https://java-sql-ai-tutorial-temp.aboard-cake.workers.dev
-- Python 现代化语法 chapter (08.html): https://java-sql-ai-tutorial-temp.aboard-cake.workers.dev/08.html
+## Live URL (temporary preview account — Misty Chrysanthemum)
+- Worker URL: https://java-sql-ai-tutorial-temp.misty-chrysanthemum.workers.dev
+- Python 现代化语法 chapter (08.html): https://java-sql-ai-tutorial-temp.misty-chrysanthemum.workers.dev/08.html
 - All 10 site files served from the self-contained worker_gz.js (gzip+base64 inline)
 
 ## Claim the temp account (within 60 minutes)
-https://dash.cloudflare.com/claim-preview?claimToken=Pjamr3TBOJYLdVeTg_OBJDmBihMrJvWblbAlq5MpdQI
+https://dash.cloudflare.com/claim-preview?claimToken=3NNxDWdRmiUq29j08QClr-qhD5Zsd9KeedzQxN_Hw1Y
 
 ## Worker / Version
 - Worker name: java-sql-ai-tutorial-temp
-- Temp account name: Aboard Cake
-- Version ID: 80d93122-b421-494d-b273-9c199387d9c6
+- Temp account name: Misty Chrysanthemum
+- Account ID: 9cd33d7a05223ebd94c012ac9d4897cc
+- Version ID: 16ffb3aa-1f5c-4805-95b3-45253a3812ff
 - Worker source: /workspace/worker_gz.js (217,917 bytes)
 - Wrangler config: /workspace/wrangler.toml
+
+## Verification Results (2026-09-25)
+
+### Cloudflare API verification (account-scoped)
+- ✅ Worker script deployed (GET /scripts returned 200, 218 KB)
+- ✅ All 10 routes present: /, /01-08.html, /assets/style.css
+- ✅ Subdomain enabled: misty-chrysanthemum.workers.dev
+- ✅ Settings: compatibility_date=2024-09-23, usage_model=standard
+
+### Local workerd runtime tests (wrangler dev)
+| Path | Status | Content-Type | Size | Title |
+|------|--------|-------------|------|-------|
+| / | 200 | text/html | 6,882 | Java · SQL · Python AI 系统化教程 |
+| /01.html | 200 | text/html | 312,634 | 01 JavaSE 基础知识点 |
+| /02.html | 200 | text/html | 20,115 | 02 Java 与 SQL 数据库深度融合 |
+| /03.html | 200 | text/html | 45,661 | 03 SQL 数据库深度讲解 |
+| /04.html | 200 | text/html | 14,632 | 04 学习报告 |
+| /05.html | 200 | text/html | 116,415 | 05 JavaEE 企业级开发 |
+| /06.html | 200 | text/html | 63,107 | 06 Java 上位机开发实战 |
+| /07.html | 200 | text/html | 43,481 | 07 JavaEE 上位机：网页监控看板 |
+| /08.html | 200 | text/html | 78,471 | 08 Python 与 AI 大模型：从原理到 Transformer |
+| /assets/style.css | 200 | text/css | 11,232 | — |
+| /nonexistent | 404 | text/plain | 23 | — |
+
+### 08.html Python modern syntax keyword check
+- Protocol: 9, async: 37, dataclass: 16, f-string: 6, match/case: 6, typing: 8, walrus: 3
+
+### Network limitation
+- Sandbox cannot reach *.workers.dev (TLS blocked at network level)
+- api.cloudflare.com, dash.cloudflare.com are reachable
+- Live URL verified by user from their own browser
 
 ## Contents shipped
 - 01.html (312 KB raw / 55 KB gz)
