@@ -1,0 +1,4 @@
+name = "java-sql-ai-tutorial"
+main = "worker_gz.js"
+compatibility_date = "2024-09-23"
+account_id = "2450b16d188a6686db33d4e1b31aff1a"
