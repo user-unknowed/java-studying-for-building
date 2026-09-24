@@ -1,0 +1,62 @@
+[
+  {
+    "path": "/01.html",
+    "ct": "text/html; charset=utf-8",
+    "b64_len": 73036,
+    "file": "/workspace/kv_payloads/01.html.json"
+  },
+  {
+    "path": "/02.html",
+    "ct": "text/html; charset=utf-8",
+    "b64_len": 9400,
+    "file": "/workspace/kv_payloads/02.html.json"
+  },
+  {
+    "path": "/03.html",
+    "ct": "text/html; charset=utf-8",
+    "b64_len": 18180,
+    "file": "/workspace/kv_payloads/03.html.json"
+  },
+  {
+    "path": "/04.html",
+    "ct": "text/html; charset=utf-8",
+    "b64_len": 7336,
+    "file": "/workspace/kv_payloads/04.html.json"
+  },
+  {
+    "path": "/05.html",
+    "ct": "text/html; charset=utf-8",
+    "b64_len": 39488,
+    "file": "/workspace/kv_payloads/05.html.json"
+  },
+  {
+    "path": "/06.html",
+    "ct": "text/html; charset=utf-8",
+    "b64_len": 21960,
+    "file": "/workspace/kv_payloads/06.html.json"
+  },
+  {
+    "path": "/07.html",
+    "ct": "text/html; charset=utf-8",
+    "b64_len": 13956,
+    "file": "/workspace/kv_payloads/07.html.json"
+  },
+  {
+    "path": "/08.html",
+    "ct": "text/html; charset=utf-8",
+    "b64_len": 24620,
+    "file": "/workspace/kv_payloads/08.html.json"
+  },
+  {
+    "path": "/assets/style.css",
+    "ct": "text/css; charset=utf-8",
+    "b64_len": 4228,
+    "file": "/workspace/kv_payloads/assets_style.css.json"
+  },
+  {
+    "path": "/index.html",
+    "ct": "text/html; charset=utf-8",
+    "b64_len": 3552,
+    "file": "/workspace/kv_payloads/index.html.json"
+  }
+]
