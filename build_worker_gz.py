@@ -73,11 +73,30 @@ export default {
     const ds = new DecompressionStream('gzip');
     const blob = new Blob([gzBytes]).stream().pipeThrough(ds);
     const decompressed = await new Response(blob).arrayBuffer();
+
+    // Cache strategy: differentiate by content type for optimal China PoP caching
+    const isStatic = /\\.(css|js|png|jpg|jpeg|gif|svg|ico|woff2?|ttf)$/i.test(p);
+    const isHtml = entry.ct.startsWith('text/html');
+    let browserCache, cdnCache;
+    if (isStatic) {
+      // Static assets: 1 year immutable (never changes, perfect for edge caching)
+      browserCache = 'public, max-age=31536000, immutable';
+      cdnCache = 'public, max-age=31536000, immutable';
+    } else if (isHtml) {
+      // HTML pages: 1 hour + stale-while-revalidate (serve fast, refresh in background)
+      browserCache = 'public, max-age=3600, stale-while-revalidate=86400';
+      cdnCache = 'public, max-age=604800, stale-while-revalidate=2592000';
+    } else {
+      browserCache = 'public, max-age=86400, stale-while-revalidate=604800';
+      cdnCache = 'public, max-age=604800, stale-while-revalidate=2592000';
+    }
+
     const response = new Response(decompressed, {
       headers: {
         'Content-Type': entry.ct,
-        'Cache-Control': 'public, max-age=86400',
-        'CDN-Cache-Control': 'public, max-age=604800',
+        'Cache-Control': browserCache,
+        'CDN-Cache-Control': cdnCache,
+        'Vary': 'Accept-Encoding',
         'Access-Control-Allow-Origin': '*'
       }
     });
