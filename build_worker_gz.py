@@ -47,11 +47,11 @@ def main():
     routes_json = json.dumps(entries, ensure_ascii=False)
 
     worker_code = """// Self-contained Worker serving gzipped site content.
-// Decompresses on-demand using DecompressionStream.
+// Decompresses on-demand using DecompressionStream, then caches at edge.
 const ROUTES = """ + routes_json + """;
 
 export default {
-  async fetch(request) {
+  async fetch(request, env, ctx) {
     const u = new URL(request.url);
     let p = u.pathname;
     if (p === '/' || p === '') p = '/index.html';
@@ -62,6 +62,10 @@ export default {
     if (!entry) {
       return new Response('Not Found: ' + p, { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
     }
+    // Try edge cache first
+    const cache = caches.default;
+    let cached = await cache.match(request);
+    if (cached) return cached;
     // Decode base64 -> gzipped bytes -> decompress
     const gzStr = atob(entry.b64);
     const gzBytes = new Uint8Array(gzStr.length);
@@ -69,14 +73,17 @@ export default {
     const ds = new DecompressionStream('gzip');
     const blob = new Blob([gzBytes]).stream().pipeThrough(ds);
     const decompressed = await new Response(blob).arrayBuffer();
-    return new Response(decompressed, {
+    const response = new Response(decompressed, {
       headers: {
         'Content-Type': entry.ct,
-        'Cache-Control': 'public, max-age=3600',
-        'Content-Encoding': 'identity',
+        'Cache-Control': 'public, max-age=86400',
+        'CDN-Cache-Control': 'public, max-age=604800',
         'Access-Control-Allow-Origin': '*'
       }
     });
+    // Cache at edge for subsequent requests (served from nearest PoP incl. China)
+    ctx.waitUntil(cache.put(request, response.clone()));
+    return response;
   }
 };
 """
